@@ -54,6 +54,7 @@ Then perhaps:
 ![Alt text](pycoder.svg "PyCoder Icon")
 
 ### Screenshots
+![Alt text](/Resources/screenshots/PyCoderAi.jpeg "PyCoderAi and Ai Settings on blackPanther OS")
 ![Alt text](/Resources/screenshots/PyCoder6.png "PyCoder6 running without Minimap on blackPanther OS")
 ![Alt text](/Resources/screenshots/pycoder2.png "PyCoder running with Minimap on blackPanther OS")
 
