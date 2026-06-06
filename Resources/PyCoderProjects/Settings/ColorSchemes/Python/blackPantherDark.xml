@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Scheme>
+<Attributes>
+ <lexer>
+  <property bold="False" color="#c8bf4d" font="Courier New" italic="False" paper="#ffffff" size="11">SingleQuotedString</property>
+  <property bold="True" color="#b3b939" font="Bitstream Vera Sans" italic="False" paper="#ffffff" size="11">Keyword</property>
+  <property bold="False" color="#d85204" font="Courier New" italic="True" paper="#ffffff" size="11">Comment</property>
+  <property bold="False" color="#c8bf4d" font="Courier New" italic="False" paper="#ffffff" size="11">TripleDoubleQuotedString</property>
+  <property bold="False" color="#c8bf4d" font="Courier New" italic="False" paper="#ffbef1" size="11">UnclosedString</property>
+  <property bold="True" color="#67909f" font="Comic Sans MS" italic="False" paper="#c1c1c1" size="11">Default</property>
+  <property bold="False" color="#ff0000" font="Courier New" italic="False" paper="#ffbef1" size="11">HighlightedIdentifier</property>
+  <property bold="False" color="#e2e222" font="Courier New" italic="False" paper="#ffffff" size="11">FunctionMethodName</property>
+  <property bold="False" color="#55c84f" font="DejaVu LGC Sans" italic="False" paper="#ffffff" size="11">DoubleQuotedString</property>
+  <property bold="True" color="#ffda7e" font="Arial [Mono]" italic="False" paper="#ffffff" size="11">ClassName</property>
+  <property bold="False" color="#ffffff" font="Courier New" italic="False" paper="#ffffff" size="11">Number</property>
+  <property bold="True" color="#6ee425" font="DejaVu Sans Mono" italic="False" paper="#ff0000" size="11">Decorator</property>
+  <property bold="False" color="#c8bf4d" font="Courier New" italic="False" paper="#ffffff" size="11">TripleSingleQuotedString</property>
+  <property bold="False" color="#18ffcd" font="Aero" italic="False" paper="#ffffff" size="11">Operator</property>
+  <property bold="False" color="#7d7d7d" font="Courier New" italic="True" paper="#ffffff" size="11">CommentBlock</property>
+  <property bold="False" color="#ffe7d4" font="Courier New" italic="False" paper="#ffffff" size="11">Identifier</property>
+ </lexer>
+ <editor>
+  <property background="#1e5b6d" foreground="#ffffff" highLight="#fdff6a">Calltips</property>
+  <property background="#212121" foreground="#66ff2e">Active Line</property>
+  <property background="#000000" foreground="#ff664b">Errors</property>
+  <property background="#242424" foreground="#d3f8b0">White Spaces</property>
+  <property background="#55aa00" foreground="#000000">Matched Braces</property>
+  <property background="#555555" foreground="#fff8ae">Selection</property>
+  <property background="#b3b3b3" foreground="#191919">Indentation Guide</property>
+  <property background="#8b8b8b" foreground="#ff0000">Edge Line</property>
+  <property background="#080808" foreground="#222222">Fold Margin</property>
+  <property background="#000000" foreground="#abd8ff">Warnings</property>
+  <property background="#3f5943" foreground="#66837c">Fold Markers</property>
+  <property background="Custom" foreground="#242424">Paper</property>
+  <property background="#000000" foreground="#ff0000">Unmatched Braces</property>
+  <property background="#121212" bold="False" font="Courier New" foreground="#c4ff00" italic="False" size="10">Number Margin</property>
+ </editor>
+</Attributes>

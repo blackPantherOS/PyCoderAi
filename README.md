@@ -5,7 +5,7 @@ PyCoder6 Ai - The LightWare Python IDE based on Qt6 with Ai support
    
 ##  Python IDE (Python3/Qt6)
 
-PyCoder seeks to simplify the process of development in python3 by means of:
+PyCoderAi seeks to simplify the process of development in python3 by means of:
 
 1. A simple and intuitive UI ( Zero clutter )
 1. Utilization of very powerful open source libraries
@@ -32,7 +32,7 @@ PyCoder seeks to simplify the process of development in python3 by means of:
 1. Etc.
 
 ### Download
-   Click on [<a href='https://github.com/blackPantherOS/PyCoder/releases'>Release</a>] to view available downloads.
+   Click on [<a href='https://github.com/blackPantherOS/PyCoderAi/releases'>Release</a>] to view available downloads.
 
 ### Dependencies:
 1. Python 3 ( for running programs )
@@ -48,12 +48,12 @@ Then perhaps:
 
 ### Latest version:
 
-** <a href='https://github.com/blackPantherOS/PyCoder/releases'>0.5.x</a>
+** <a href='https://github.com/blackPantherOS/PyCoderAi/releases'>0.5.x</a>
   
 ### Icon
 ![Alt text](pycoder.svg "PyCoder Icon")
 
 ### Screenshots
-![Alt text](/Resources/screenshots/PyCoder6.png "PyCoder6 running without Minimap blackPanther OS v24.1")
-![Alt text](/Resources/screenshots/pycoder2.png "PyCoder running with Minimap blackPanther OS v24.1")
+![Alt text](/Resources/screenshots/PyCoder6.png "PyCoder6 running without Minimap on blackPanther OS")
+![Alt text](/Resources/screenshots/pycoder2.png "PyCoder running with Minimap on blackPanther OS")
 

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Scheme>
+<Attributes>
+ <lexer>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">Entity</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PHPComment</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">Script</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PythonComment</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPVBScriptComment</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">XMLEnd</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">JavaScriptCommentDoc</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PythonNumber</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPPythonIdentifier</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">VBScriptKeyword</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">SGMLBlockDefault</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPVBScriptDefault</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">SGMLSpecial</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPXCComment</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">JavaScriptRegex</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPJavaScriptComment</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PHPDoubleQuotedString</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PythonTripleDoubleQuotedString</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">SGMLDoubleQuotedString</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPJavaScriptDoubleQuotedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PHPDefault</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">SGMLError</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">JavaScriptKeyword</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPPythonTripleDoubleQuotedString</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PHPCommentLine</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPPythonStart</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">JavaScriptWord</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PythonTripleSingleQuotedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">HTMLValue</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPPythonComment</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">JavaScriptSymbol</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">JavaScriptCommentLine</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPPythonDoubleQuotedString</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPVBScriptString</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">HTMLComment</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">VBScriptNumber</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">HTMLDoubleQuotedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PythonIdentifier</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">SGMLEntity</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PythonFunctionMethodName</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPJavaScriptUnclosedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPJavaScriptSymbol</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPAtStart</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPPythonDefault</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PythonDefault</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">UnknownAttribute</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPVBScriptUnclosedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PythonClassName</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">SGMLParameter</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">JavaScriptDefault</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">XMLStart</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PythonDoubleQuotedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PHPStart</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPVBScriptStart</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">JavaScriptSingleQuotedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">OtherInTag</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">JavaScriptUnclosedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">VBScriptIdentifier</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">Default</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">VBScriptDefault</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPStart</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPJavaScriptDefault</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">SGMLSingleQuotedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPPythonNumber</property>
+  <property bold="False" color="#0000ff" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">Attribute</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPPythonOperator</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PythonStart</property>
+  <property bold="False" color="#E72500" font="Bitstream Vera Sans Mono" italic="True" paper="#000000" size="10">Tag</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">CDATA</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPPythonSingleQuotedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPVBScriptIdentifier</property>
+  <property bold="False" color="#71AB71" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">UnknownTag</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">VBScriptComment</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPJavaScriptCommentLine</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">VBScriptUnclosedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PHPNumber</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">JavaScriptDoubleQuotedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPJavaScriptWord</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">XMLTagEnd</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">SGMLComment</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">SGMLParameterComment</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">VBScriptStart</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PHPSingleQuotedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPPythonFunctionMethodName</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PythonKeyword</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPJavaScriptNumber</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PHPKeyword</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">SGMLCommand</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPJavaScriptSingleQuotedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PHPDoubleQuotedVariable</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPJavaScriptCommentDoc</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPVBScriptKeyword</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">SGMLDefault</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PHPOperator</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">VBScriptString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPPythonKeyword</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPJavaScriptKeyword</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PythonSingleQuotedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">JavaScriptStart</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPJavaScriptStart</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">HTMLSingleQuotedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PHPVariable</property>
+  <property bold="False" color="#00B500" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">JavaScriptComment</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPPythonClassName</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">JavaScriptNumber</property>
+  <property bold="False" color="#008100" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPPythonTripleSingleQuotedString</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPVBScriptNumber</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">ASPJavaScriptRegex</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">HTMLNumber</property>
+  <property bold="False" color="#000000" font="Bitstream Vera Sans Mono" italic="False" paper="#000000" size="10">PythonOperator</property>
+ </lexer>
+ <editor>
+  <property background="#aa557f" foreground="#ffc6c2">Edge Line</property>
+  <property background="#000000" bold="False" font="Bitstream Vera Sans Mono" foreground="#949494" italic="False" size="8">Number Margin</property>
+  <property background="#000000" foreground="#000000">Fold Margin</property>
+  <property background="#000000" foreground="#bababa">Fold Markers</property>
+  <property background="#d4ffd4" foreground="#101010">Active Line</property>
+  <property background="#aaddff" foreground="#1e1e1e">Selection</property>
+  <property background="#000000" foreground="#000000">White Spaces</property>
+  <property background="#CCCCCC" foreground="#000000">Matched Braces</property>
+  <property background="#ff5555" foreground="#000000">Unmatched Braces</property>
+  <property background="#000000" foreground="#000000" highLight="#FF3333">Calltips</property>
+  <property background="#0000ff" foreground="#a8a8a8">Indentation Guide</property>
+  <property background="#000000" foreground="#ffffa9">Warnings</property>
+  <property background="#000000" foreground="#ffaaa7">Errors</property>
+  <property background="Plain" foreground="#7FE87F">Paper</property>
+ </editor>
+</Attributes>
