@@ -245,6 +245,22 @@ class AutoCompletionThread(QtCore.QThread):
 
 
 class CodeEditor(BaseScintilla):
+    def mouseMoveEvent(self, event):
+        """Handle tooltip hover events for AI code explanation.
+
+        Currently displays a placeholder tooltip with the line content.
+        Future improvement: send the line or selected token to AIAssistant
+        for a detailed explanation.
+        """
+        pos = self.positionFromPoint(event.pos())
+        if pos != -1:
+            line = self.lineFromPosition(pos)
+            # Get the full line text
+            line_text = self.text(line)
+            tooltip = f"AI Explanation:\n{line_text.strip()}"
+            QtWidgets.QToolTip.showText(event.globalPos(), tooltip, self)
+        # Fallback to default handling
+        super().mouseMoveEvent(event)
 
     def __init__(self, useData, refactor, colorScheme,
                  DATA, editorTabWidget, parent=None):

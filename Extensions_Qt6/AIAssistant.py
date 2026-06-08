@@ -8,7 +8,8 @@ Integrates with Claude API for code suggestions, explanations, and improvements
 import requests
 import json
 from PyQt6 import QtCore, QtWidgets
-from PyQt6.QtCore import QThread, pyqtSignal
+from PyQt6.QtCore import QThread, pyqtSignal, Qt
+from PyQt6.QtWidgets import QToolTip
 
 try:
     from anthropic import Anthropic, AnthropicError
@@ -45,6 +46,8 @@ class AIAssistant(QtCore.QObject):
 
     suggestion_ready = pyqtSignal(str)
     explanation_ready = pyqtSignal(str)
+    preload_ready = pyqtSignal(str)
+    custom_ready = pyqtSignal(str)  # New signal for custom prompts
     error_occurred = pyqtSignal(str)
 
     def __init__(self, parent=None):
@@ -67,6 +70,14 @@ class AIAssistant(QtCore.QObject):
         self.timeout = timeout
         self.cache_enabled = cache_enabled
 
+    def set_language(self, lang_code):
+        """Set the language for AI responses"""
+        self.language = lang_code
+
+    def get_language(self):
+        """Get user's preferred language for AI responses"""
+        return getattr(self, 'language', 'hungarian')
+
     def get_available_models(self):
         """Fetch available models from the API"""
         models = [
@@ -80,21 +91,44 @@ class AIAssistant(QtCore.QObject):
         # Add Ollama models if available
         if self.use_ollama:
             try:
-                ollama_models = ollama.list()['models']
+                print(f"[DEBUG] Fetching Ollama models...")
+                result = ollama.list()
+                print(f"[DEBUG] Ollama list result: {result}")
+                ollama_models = result.get('models', [])
                 for model in ollama_models:
-                    # Use 'model' field if available, otherwise 'name'
                     model_name = model.get('model', model.get('name', str(model)))
                     models.append(f"ollama:{model_name}")
+                    print(f"[DEBUG] Found Ollama model: {model_name}")
             except Exception as e:
-                print(f"Warning: Could not fetch Ollama models: {e}")
-                pass
+                print(f"[ERROR] Could not fetch Ollama models: {e}")
+                import traceback
+                traceback.print_exc()
 
         return models
+
+    def preload_model(self, model_name: str) -> bool:
+        """Preload a model into memory to avoid cold start delays."""
+        print(f"[DEBUG] PreloadModel called for: {model_name}")
+        if self.worker_thread and self.worker_thread.isRunning():
+            print("[DEBUG] Cancelling previous request")
+            self.worker_thread.quit()
+            self.worker_thread.wait()
+
+        try:
+            if model_name.startswith("ollama:"):
+                model = model_name[7:]
+                if self.use_ollama:
+                    return ollama.preload_model(model)
+            return False
+        except Exception as e:
+            print(f"[ERROR] Preload failed: {e}")
+            return False
 
     def generate_code_suggestions(self, code, prompt=""):
         """Generate code suggestions using AI"""
         if not prompt:
-            prompt = f"Analyze the following Python code and suggest improvements:\n\n{code}"
+            lang = self.get_language()
+            prompt = f"Analyze the following {lang.lower()} code and suggest improvements:\n\n{code}"
 
         # Check cache first
         cache_key = f"suggestion:{self.selected_model}:{hash(prompt)}"
@@ -121,19 +155,13 @@ class AIAssistant(QtCore.QObject):
 
         self._start_worker_thread("explanation", code, prompt)
 
-    def fix_code_errors(self, code, error_message=""):
-        """Suggest fixes for code errors"""
-        prompt = f"The following Python code has an error:\n\nError: {error_message}\n\nCode:\n{code}\n\nSuggest fixes:"
-
-        # Check cache first
-        cache_key = f"fix:{self.selected_model}:{hash(prompt)}"
-        if getattr(self, 'cache_enabled', False) and cache_key in self.cache:
-            # Return cached result immediately
-            import PyQt6.QtCore as QtCore
-            QtCore.QTimer.singleShot(0, lambda: self.suggestion_ready.emit(self.cache[cache_key]))
+    def generate_custom_prompt(self, prompt):
+        """Send custom prompt to AI"""
+        prompt = prompt.strip()
+        if not prompt:
+            self.on_error("Empty prompt")
             return
-
-        self._start_worker_thread("suggestion", code, prompt)
+        self._start_worker_thread("custom", "", prompt)
 
     def _start_worker_thread(self, request_type, code, prompt):
         """Start a worker thread for API calls"""
@@ -158,15 +186,24 @@ class AIAssistant(QtCore.QObject):
 
     def _handle_result(self, result, request_type):
         """Handle the result from the worker thread"""
+        print(f"[DEBUG] _handle_result called with request_type={request_type}, result_len={len(result) if result else 0}")
         # Cache the result if caching is enabled
         if getattr(self, 'cache_enabled', False):
             cache_key = f"{request_type}:{self.selected_model}:{hash(self.worker_thread.prompt)}"
             self.cache[cache_key] = result
 
         if request_type == "suggestion":
+            print("[DEBUG] Emitting suggestion_ready")
             self.suggestion_ready.emit(result)
         elif request_type == "explanation":
+            print("[DEBUG] Emitting explanation_ready")
             self.explanation_ready.emit(result)
+        elif request_type == "preload":
+            print("[DEBUG] Emitting preload_ready")
+            self.preload_ready.emit(result)
+        elif request_type == "custom":
+            print("[DEBUG] Emitting custom_ready")
+            self.custom_ready.emit(result)  # ← NEW: emit signal for custom requests
 
     def cancel_request(self):
         """Cancel the current AI request"""
@@ -180,6 +217,7 @@ class AIWorkerThread(QThread):
 
     result_ready = pyqtSignal(str, str)
     error_occurred = pyqtSignal(str)
+    progress_update = pyqtSignal(int)
 
     def __init__(self, api_key, model, prompt, request_type, use_anthropic_api, use_ollama, timeout=30):
         super().__init__()
@@ -190,18 +228,34 @@ class AIWorkerThread(QThread):
         self.use_anthropic_api = use_anthropic_api
         self.use_ollama = use_ollama
         self.timeout = timeout
+        self._cancelled = False
+
+    def cancel(self):
+        """Request cancellation of the current operation"""
+        print(f"[DEBUG] AIWorkerThread.cancel() called")
+        self._cancelled = True
 
     def run(self):
         """Make the API call in a separate thread"""
+        print(f"[DEBUG] AIWorkerThread.run() started for model={self.model}, type={self.request_type}")
         try:
+            if self._cancelled:
+                print("[DEBUG] Cancelled before start")
+                return
+
             if self.model.startswith("ollama:") and self.use_ollama:
                 # Use Ollama
                 model_name = self.model[7:]  # Remove "ollama:" prefix
+                print(f"[DEBUG] Calling Ollama generate for {model_name}")
                 response = ollama.generate(
                     model=model_name,
                     prompt=self.prompt,
-                    options={"temperature": 0.7}
+                    options={"temperature": 0.7, "num_predict": 2048}
                 )
+
+                if self._cancelled:
+                    print("[DEBUG] Cancelled during Ollama call")
+                    return
 
                 if response and 'response' in response:
                     content = response['response']
@@ -211,14 +265,22 @@ class AIWorkerThread(QThread):
 
             elif self.use_anthropic_api:
                 # Use Anthropic API
+                print(f"[DEBUG] Calling Anthropic API for {self.model}")
                 client = Anthropic(api_key=self.api_key)
+                # For custom prompts, we don't need special handling; just send the prompt
+                messages = [{"role": "user", "content": self.prompt}]
+                if self.request_type == "explanation":
+                    # Prepend a system-like instruction for explanation requests
+                    messages = [{"role": "system", "content": "Explain the following in detail:"}] + messages
                 response = client.messages.create(
                     model=self.model,
                     max_tokens=2048,
-                    messages=[
-                        {"role": "user", "content": self.prompt}
-                    ]
+                    messages=messages
                 )
+
+                if self._cancelled:
+                    print("[DEBUG] Cancelled during Anthropic call")
+                    return
 
                 if response.content:
                     content = "\n".join([block.text for block in response.content])
@@ -228,6 +290,7 @@ class AIWorkerThread(QThread):
 
             else:
                 # Try to use free-claude-code API
+                print(f"[DEBUG] Calling free-claude-code API for {self.model}")
                 try:
                     params = {
                         "model": self.model,
@@ -242,6 +305,10 @@ class AIWorkerThread(QThread):
                         timeout=self.timeout
                     )
 
+                    if self._cancelled:
+                        print("[DEBUG] Cancelled during free-claude-code call")
+                        return
+
                     if response.status_code == 200:
                         result = response.json()
                         if "response" in result:
@@ -255,7 +322,8 @@ class AIWorkerThread(QThread):
                         # Fallback to demo mode
                         content = self._generate_demo_response(self.prompt)
                         self.result_ready.emit(content, self.request_type)
-                except Exception:
+                except Exception as e:
+                    print(f"[DEBUG] free-claude-code API error: {e}")
                     # Fallback to demo mode
                     content = self._generate_demo_response(self.prompt)
                     self.result_ready.emit(content, self.request_type)
@@ -263,7 +331,12 @@ class AIWorkerThread(QThread):
         except AnthropicError as e:
             self.error_occurred.emit(f"Anthropic API Error: {str(e)}")
         except Exception as e:
+            print(f"[DEBUG] AIWorkerThread error: {e}")
+            import traceback
+            traceback.print_exc()
             self.error_occurred.emit(f"Error calling AI API: {str(e)}")
+        finally:
+            print(f"[DEBUG] AIWorkerThread.run() finished")
 
     def _generate_demo_response(self, prompt):
         """Generate a demo response when API is not available"""
