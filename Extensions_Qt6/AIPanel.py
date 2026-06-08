@@ -40,6 +40,13 @@ class AIPanel(QtWidgets.QWidget):
         self.ai_assistant = AIAssistant(self)
         self.current_editor = None
 
+        # History tracking
+        self.history_count = 0
+        self._pending_prompt = ""  # Store last sent prompt for history
+
+        # Font size tracking
+        self.font_size = 12  # Default font size for prompt and chat messages
+
         # Allow the panel to expand and shrink as needed
         self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
 
@@ -157,29 +164,43 @@ class AIPanel(QtWidgets.QWidget):
         self.prompt_input.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
         main_layout.addWidget(self.prompt_input)
 
-        # Send button
+        # Send button and font controls
         send_layout = QtWidgets.QHBoxLayout()
         send_layout.setContentsMargins(0, 0, 0, 0)
 
         self.send_btn = QtWidgets.QPushButton("Send")
         self.send_btn.setIcon(QtGui.QIcon(self._resource_path("Resources/images/flag-green.png")))
         self.send_btn.setToolTip("Send prompt to AI")
-        self.send_btn.setFixedWidth(120)
+        self.send_btn.setFixedWidth(100)
         send_layout.addWidget(self.send_btn)
+
+        # Clear button
+        self.clear_btn = QtWidgets.QPushButton("Clear")
+        self.clear_btn.setToolTip("Clear prompt input")
+        self.clear_btn.setFixedWidth(80)
+        send_layout.addWidget(self.clear_btn)
+
+        # Font size controls
+        self.fontSize = 12  # Default font size
+        self.decrease_font_btn = QtWidgets.QPushButton("-A")
+        self.decrease_font_btn.setToolTip("Decrease font size")
+        self.decrease_font_btn.setFixedWidth(40)
+        send_layout.addWidget(self.decrease_font_btn)
+
+        self.increase_font_btn = QtWidgets.QPushButton("+A")
+        self.increase_font_btn.setToolTip("Increase font size")
+        self.increase_font_btn.setFixedWidth(40)
+        send_layout.addWidget(self.increase_font_btn)
+
         send_layout.addStretch()
         main_layout.addLayout(send_layout)
 
-        # Response area
-        response_label = QtWidgets.QLabel("AI Response:")
-        response_label.setStyleSheet("font-weight: bold;")
-        main_layout.addWidget(response_label)
-
-        self.response_text = QtWidgets.QTextEdit()
-        self.response_text.setReadOnly(True)
-        self.response_text.setStyleSheet("background-color: #1e1e1e; color: #ffffff; font-family: 'Courier New', monospace;")
-        self.response_text.setMinimumHeight(50)
-        self.response_text.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
-        main_layout.addWidget(self.response_text)
+        # Response area – modern chat display with collapsible messages
+        self.chat_display = QtWidgets.QListWidget()
+        self.chat_display.setStyleSheet("background-color: #2d2d30; color: #ffffff; border:none;")
+        self.chat_display.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.chat_display.itemClicked.connect(self.on_history_item_clicked)
+        main_layout.addWidget(self.chat_display)
 
         # Status bar
         self.status_label = QtWidgets.QLabel("Ready")
@@ -193,6 +214,9 @@ class AIPanel(QtWidgets.QWidget):
         self.fix_btn.clicked.connect(self.on_fix_clicked)
         self.cancel_btn.clicked.connect(self.on_cancel_clicked)
         self.send_btn.clicked.connect(self.on_send_clicked)
+        self.clear_btn.clicked.connect(self.on_clear_clicked)
+        self.increase_font_btn.clicked.connect(self.on_increase_font)
+        self.decrease_font_btn.clicked.connect(self.on_decrease_font)
         self.preload_btn.clicked.connect(self.on_preload_clicked)
         # Connect model combo box changes to preload model
         self.model_combo.currentIndexChanged.connect(self._on_model_changed)
@@ -248,7 +272,6 @@ class AIPanel(QtWidgets.QWidget):
         self.cancel_btn.setEnabled(False)
         self.preload_btn.setEnabled(True)
         self.status_label.setText("Model preloaded successfully")
-        self.response_text.setPlainText(f"Model preloaded successfully.\n\nGreeting from model:\n{result}")
         debug_print(f"[INFO] Preload complete: {result}")
 
     def _on_preload_error(self, error):
@@ -498,6 +521,12 @@ class AIPanel(QtWidgets.QWidget):
             full_prompt = f"Code:\n{code}\n\nPrompt:\n{prompt_text}"
             debug_print("[DEBUG] Sending code with custom prompt")
 
+        # Store prompt for history and add to chat display
+        self._pending_prompt = prompt_text
+        self.history_count += 1
+        # Use helper to add chat item with proper role and collapse support
+        self._add_chat_item("user", prompt_text)
+
         self.start_ai_request("custom", full_prompt)
         #self.start_ai_request("suggestion", full_prompt)
 
@@ -513,7 +542,9 @@ class AIPanel(QtWidgets.QWidget):
         self.busy_indicator.setVisible(True)
         self.status_label.setText("Processing...")
         self.status_label.setStyleSheet("color: #0066cc;")
-        self.response_text.clear()
+
+        # Clear input for new paragraph (prompt already added to chat display in on_send_clicked)
+        self.prompt_input.clear()  # new paragraph (empty)
 
         # Update model - strip size info if present
         current_model = self.model_combo.currentText()
@@ -572,6 +603,112 @@ class AIPanel(QtWidgets.QWidget):
 
         self.start_ai_request("fix", code)
 
+    def _add_chat_item(self, role, text):
+        """Add a chat item with collapsible support for long messages.
+        role: "user" or "ai" or "error"
+        text: full message string
+        """
+        # Create container widget
+        widget = QtWidgets.QWidget()
+        layout = QtWidgets.QVBoxLayout(widget)
+        layout.setContentsMargins(8, 4, 8, 4)
+        layout.setSpacing(2)
+
+        # Determine colors and alignment
+        if role == "user":
+            bg_color = "#2a3b2a"  # Dark green for user
+            align = Qt.AlignmentFlag.AlignRight
+        elif role == "error":
+            bg_color = "#4a2222"  # Dark red for errors
+            align = Qt.AlignmentFlag.AlignLeft
+        else:
+            bg_color = "#333333"  # Dark gray for AI
+            align = Qt.AlignmentFlag.AlignLeft
+
+        # Timestamp label
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+        ts_label = QtWidgets.QLabel(timestamp)
+        ts_label.setStyleSheet(f"color:#888; font-size:8pt;")
+        ts_label.setAlignment(align)
+        layout.addWidget(ts_label)
+
+        # Count lines for collapse decision
+        lines = text.splitlines()
+
+        if len(lines) > 3:
+            # Long message – preview with toggle
+            preview_text = "\n".join(lines[:3]) + "\n..."
+            preview_label = QtWidgets.QLabel(preview_text)
+            preview_label.setWordWrap(True)
+            preview_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+            preview_label.setStyleSheet(f"background-color:{bg_color}; padding:6px; border-radius:6px;")
+            preview_label.setAlignment(align)
+            preview_label.setFont(QtGui.QFont("", self.font_size))
+
+            full_label = QtWidgets.QLabel(text)
+            full_label.setWordWrap(True)
+            full_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+            full_label.setStyleSheet(f"background-color:{bg_color}; padding:6px; border-radius:6px;")
+            full_label.setAlignment(align)
+            full_label.setVisible(False)
+            full_label.setFont(QtGui.QFont("", self.font_size))  # Font size updated immediately
+
+            toggle_btn = QtWidgets.QPushButton("Show more")
+            toggle_btn.setStyleSheet("font-size:8pt; color:#888;")
+            toggle_btn.setCursor(QtGui.QCursor(Qt.CursorShape.PointingHandCursor))
+
+            def toggle(checked=False):
+                if full_label.isVisible():
+                    full_label.setVisible(False)
+                    preview_label.setVisible(True)
+                    toggle_btn.setText("Show more")
+                else:
+                    full_label.setVisible(True)
+                    preview_label.setVisible(False)
+                    toggle_btn.setText("Show less")
+
+            toggle_btn.clicked.connect(toggle)
+
+            layout.addWidget(preview_label)
+            layout.addWidget(full_label)
+            layout.addWidget(toggle_btn, alignment=align)
+        else:
+            # Short message – possibly bold for plain user text
+            is_plain_user = role == "user" and not text.strip().startswith("```") and not text.strip().startswith("`")
+            label = QtWidgets.QLabel(text)
+            label.setWordWrap(True)
+            label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+            style = f"background-color:{bg_color}; padding:6px; border-radius:6px;"
+            if is_plain_user:
+                style += " font-weight: bold;"
+            label.setStyleSheet(style)
+            label.setAlignment(align)
+            label.setFont(QtGui.QFont("", self.font_size))
+            layout.addWidget(label)
+
+        # Insert into list
+        item = QtWidgets.QListWidgetItem()
+        item.setSizeHint(widget.sizeHint())
+        self.chat_display.addItem(item)
+        self.chat_display.setItemWidget(item, widget)
+        # Add a visual separator after each message
+        self._add_separator()
+        self.chat_display.scrollToBottom()
+
+    def _add_separator(self):
+        """Add a separator line between messages."""
+        sep_item = QtWidgets.QListWidgetItem()
+        sep_widget = QtWidgets.QWidget()
+        sep_layout = QtWidgets.QHBoxLayout(sep_widget)
+        sep_layout.setContentsMargins(0, 2, 0, 2)
+        sep_line = QtWidgets.QFrame()
+        sep_line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        sep_line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        sep_line.setStyleSheet("background-color:#444; max-height:1px;")
+        sep_layout.addWidget(sep_line)
+        sep_item.setSizeHint(sep_widget.sizeHint())
+        self.chat_display.addItem(sep_item)
+        self.chat_display.setItemWidget(sep_item, sep_widget)
 
     def on_cancel_clicked(self):
         """Handle cancel button click"""
@@ -584,12 +721,52 @@ class AIPanel(QtWidgets.QWidget):
         self.status_label.setText("Cancelled")
         self.status_label.setStyleSheet("color: #cc0000;")
 
+    def on_clear_clicked(self):
+        """Clear the current prompt input and reset any temporary state."""
+        if hasattr(self, "prompt_input") and self.prompt_input is not None:
+            self.prompt_input.clear()
+        self.status_label.setText("Ready")
+        self.status_label.setStyleSheet("color: #666;")
+
+    def on_increase_font(self):
+        """Increase the font size of the prompt input."""
+        self._adjust_font_size(delta=+1)
+
+    def on_decrease_font(self):
+        """Decrease the font size of the prompt input, but never go below size 1."""
+        self._adjust_font_size(delta=-1)
+
+    def _adjust_font_size(self, delta: int):
+        """Helper to modify the prompt input and chat display font size safely."""
+        if not hasattr(self, "prompt_input") or self.prompt_input is None:
+            return
+        new_size = max(1, self.font_size + delta)
+        self.font_size = new_size
+
+        # Update prompt input font
+        font = self.prompt_input.font()
+        font.setPointSize(new_size)
+        self.prompt_input.setFont(font)
+
+        # Update all existing chat items
+        for row in range(self.chat_display.count()):
+            item = self.chat_display.item(row)
+            widget = self.chat_display.itemWidget(item)
+            if widget:
+                # Find all QLabel children and update their font
+                labels = widget.findChildren(QtWidgets.QLabel)
+                for label in labels:
+                    label.setFont(QtGui.QFont("", new_size))
+
     def on_suggestion_ready(self, suggestion):
         """Handle suggestion ready signal"""
         self._is_processing = False
         self._busy_timer.stop()
         self.preload_progress.setVisible(False)
-        self.response_text.setPlainText(suggestion)
+
+        # Add suggestion to chat display
+        self._add_chat_item("ai", f"Suggestion: {suggestion}")
+
         self.suggest_btn.setEnabled(True)
         self.explain_btn.setEnabled(True)
         self.fix_btn.setEnabled(True)
@@ -603,7 +780,10 @@ class AIPanel(QtWidgets.QWidget):
         self._is_processing = False
         self._busy_timer.stop()
         self.preload_progress.setVisible(False)
-        self.response_text.setPlainText(explanation)
+
+        # Add explanation to chat display
+        self._add_chat_item("ai", f"Explanation: {explanation}")
+
         self.suggest_btn.setEnabled(True)
         self.explain_btn.setEnabled(True)
         self.fix_btn.setEnabled(True)
@@ -617,7 +797,13 @@ class AIPanel(QtWidgets.QWidget):
         self._is_processing = False
         self._busy_timer.stop()
         self.preload_progress.setVisible(False)
-        self.response_text.setPlainText(content)
+
+        # Add custom response to chat display
+        item = QtWidgets.QListWidgetItem(f"AI: {content}")
+        item.setData(32, content)  # Store with UserRole flag
+        self.chat_display.addItem(item)
+        self.chat_display.scrollToBottom()
+
         self.suggest_btn.setEnabled(True)
         self.explain_btn.setEnabled(True)
         self.fix_btn.setEnabled(True)
@@ -628,9 +814,41 @@ class AIPanel(QtWidgets.QWidget):
         self.status_label.setStyleSheet("color: #009900;")
         debug_print("[DEBUG] Custom response received and UI reset")
 
+    def on_history_item_clicked(self, item):
+        """Handle history item click - quote/reply functionality."""
+        # Check if item has stored data (new format)
+        if item.data(32) is not None:  # UserRole = 32
+            text = item.data(32)
+            # Determine if it's a user or AI message by the prefix in display text
+            display_text = item.text()
+            if display_text.startswith("You:"):
+                self.prompt_input.setPlainText(text)
+            elif display_text.startswith("AI:"):
+                # For AI responses, we might want to reply or quote
+                self.prompt_input.insertPlainText(f"\n\n{text}")
+        else:
+            # Fallback for old format items (should not happen after update)
+            text = item.text()
+            if text.startswith("[+]"):  # Prompt entry - quote it
+                num = text[3:].split("]")[0]
+                prompt_text = text.split("] Prompt:")[1]
+                self.prompt_input.setPlainText(f"[+] {num} {prompt_text}")
+            elif "]" in text and "Prompt:" in text:  # Old format prompt entry
+                num = text.split("]")[0][3:]
+                prompt_text = text.split("] Prompt:")[1]
+                self.prompt_input.setPlainText(f"[+] {num} {prompt_text}")
+            elif "Response:" in text:  # Response entry - allow reply
+                response_text = text.split("Response:")[1]
+                self.prompt_input.insertPlainText(f"\n\nREPLY: {response_text}")
+
     def on_error(self, error_message):
         """Handle error signal"""
-        self.response_text.setPlainText(f"Hiba: {error_message}")
+        # Add error to chat display
+        item = QtWidgets.QListWidgetItem(f"Error: {error_message}")
+        item.setData(32, error_message)  # Store with UserRole flag
+        self.chat_display.addItem(item)
+        self.chat_display.scrollToBottom()
+
         self.suggest_btn.setEnabled(True)
         self.explain_btn.setEnabled(True)
         self.fix_btn.setEnabled(True)
