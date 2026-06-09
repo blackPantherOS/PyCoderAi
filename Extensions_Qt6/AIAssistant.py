@@ -48,6 +48,7 @@ class AIAssistant(QtCore.QObject):
     explanation_ready = pyqtSignal(str)
     preload_ready = pyqtSignal(str)
     custom_ready = pyqtSignal(str)  # New signal for custom prompts
+    fix_ready = pyqtSignal(str)
     error_occurred = pyqtSignal(str)
 
     def __init__(self, parent=None):
@@ -62,6 +63,11 @@ class AIAssistant(QtCore.QObject):
         self.cache_enabled = False  # Cache disabled by default
         self.api_base = "http://localhost:8082"  # Default API base URL
 
+        # Context window settings (Ollama num_ctx). Disabled by default = use model default.
+        # When enabled, we pass num_ctx to Ollama + do smart truncation on our side.
+        self.context_window_enabled = False
+        self.context_window_size = 0   # 0 or "model default" means do not override num_ctx
+
     def set_api_config(self, base_url, api_key, model, timeout=30, cache_enabled=True):
         """Configure API settings"""
         self.api_base = base_url
@@ -72,11 +78,32 @@ class AIAssistant(QtCore.QObject):
 
     def set_language(self, lang_code):
         """Set the language for AI responses"""
-        self.language = lang_code
+        self.language = lang_code  # e.g. "Hungarian"
 
     def get_language(self):
         """Get user's preferred language for AI responses"""
-        return getattr(self, 'language', 'hungarian')
+        return getattr(self, 'language', 'Hungarian')
+
+    def set_context_window(self, enabled: bool, size: int):
+        """Enable/disable custom context window and set the size in tokens.
+        size=0 or negative means "model default" (do not send num_ctx).
+        """
+        self.context_window_enabled = bool(enabled)
+        self.context_window_size = int(size) if size and size > 0 else 0
+
+    def _get_lang_instruction(self):
+        """Return a strong language directive to put at the very start of prompts.
+        This ensures the model respects the dropdown even for custom free-text requests.
+        """
+        lang = self.get_language()
+        # Very strong front-load + command + repetition. Critical for local models + English task descriptions.
+        return (
+            f"IMPORTANT LANGUAGE RULE: You MUST respond in {lang} ONLY. "
+            f"The user has selected {lang} in the PyCoder6 AI language dropdown. "
+            f"ALL your output — explanations, suggestions, code comments, summaries, EVERYTHING — must be written in {lang}. "
+            f"Do not use English unless the user explicitly asks for it. "
+            f"Confirm by starting your reply in {lang}.\n\n"
+        )
 
     def get_available_models(self):
         """Fetch available models from the API"""
@@ -88,17 +115,37 @@ class AIAssistant(QtCore.QObject):
             "claude-3-haiku-20240307"
         ]
 
-        # Add Ollama models if available
+        # Add Ollama models if available (with size suffix when possible, so the dropdown shows them)
         if self.use_ollama:
             try:
                 print(f"[DEBUG] Fetching Ollama models...")
                 result = ollama.list()
-                print(f"[DEBUG] Ollama list result: {result}")
-                ollama_models = result.get('models', [])
+                #print(f"[DEBUG] Ollama list result: {result}")
+                # Support BOTH: official 'ollama' pip pkg (ListResponse with .models of Model objs)
+                # and our ollama_wrapper (returns dict with 'models' list of dicts from /api/tags).
+                if hasattr(result, 'models') and not isinstance(result, dict):
+                    ollama_models = result.models or []
+                elif isinstance(result, dict):
+                    ollama_models = result.get('models', []) or []
+                else:
+                    ollama_models = list(result) if result else []
                 for model in ollama_models:
-                    model_name = model.get('model', model.get('name', str(model)))
-                    models.append(f"ollama:{model_name}")
-                    print(f"[DEBUG] Found Ollama model: {model_name}")
+                    if isinstance(model, dict):
+                        model_name = model.get('model') or model.get('name') or str(model)
+                        size = model.get('size', 0) or 0
+                    else:
+                        # Official ollama.Model objects expose .model (and sometimes .name)
+                        model_name = getattr(model, 'model', None) or getattr(model, 'name', None) or str(model)
+                        size = getattr(model, 'size', 0) or 0
+                    if model_name:
+                        entry = f"ollama:{model_name}"
+                        if size:
+                            try:
+                                entry += f" ({size / (1024**3):.1f} GB)"
+                            except Exception:
+                                pass
+                        models.append(entry)
+                        print(f"[DEBUG] Found Ollama model: {model_name} (size attached: {bool(size)})")
             except Exception as e:
                 print(f"[ERROR] Could not fetch Ollama models: {e}")
                 import traceback
@@ -125,10 +172,22 @@ class AIAssistant(QtCore.QObject):
             return False
 
     def generate_code_suggestions(self, code, prompt=""):
-        """Generate code suggestions using AI"""
+        """Generate code suggestions using AI.
+        The actual instruction sent to the model is built here (not visible in UI for quick buttons).
+        We structure it like custom prompts (Task + Code + explicit language reminders) so
+        that Suggest/Explain/Fix also respect the language dropdown.
+        """
+        instr = self._get_lang_instruction()
+        lang = self.get_language()
         if not prompt:
-            lang = self.get_language()
-            prompt = f"Analyze the following {lang.lower()} code and suggest improvements:\n\n{code}"
+            task = ("Task: Analyze the following code from the editor and suggest concrete improvements "
+                    "(readability, bugs, performance, style, best practices). "
+                    "Provide a short numbered list of DISTINCT suggestions. "
+                    "Do NOT repeat any point, sentence or paragraph. Be concise and stop after the main suggestions.")
+            tail = f"\n\nNow provide the full answer in {lang} only. Do not repeat yourself."
+            prompt = f"{instr}{task}\n\nCode:\n{code}{tail}"
+        else:
+            prompt = f"{instr}{prompt}"
 
         # Check cache first
         cache_key = f"suggestion:{self.selected_model}:{hash(prompt)}"
@@ -142,8 +201,14 @@ class AIAssistant(QtCore.QObject):
 
     def explain_code(self, code, prompt=""):
         """Explain what the code does"""
+        instr = self._get_lang_instruction()
+        lang = self.get_language()
         if not prompt:
-            prompt = f"Explain the following Python code in detail:\n\n{code}"
+            task = "Task: Explain the following Python code in detail (what it does, how it works, key parts)."
+            tail = f"\n\nNow provide the full explanation in {lang} only."
+            prompt = f"{instr}{task}\n\nCode:\n{code}{tail}"
+        else:
+            prompt = f"{instr}{prompt}"
 
         # Check cache first
         cache_key = f"explanation:{self.selected_model}:{hash(prompt)}"
@@ -156,19 +221,59 @@ class AIAssistant(QtCore.QObject):
         self._start_worker_thread("explanation", code, prompt)
 
     def generate_custom_prompt(self, prompt):
-        """Send custom prompt to AI"""
+        """Send custom prompt to AI.
+        The incoming 'prompt' here is typically a pre-built context string from AIPanel
+        that may already contain 'Code:' + user request. We ALWAYS front-load the
+        language directive so the model respects the dropdown setting by default.
+        """
         prompt = prompt.strip()
         if not prompt:
-            self.on_error("Empty prompt")
+            self.error_occurred.emit("Empty prompt")
             return
-        self._start_worker_thread("custom", "", prompt)
+        instr = self._get_lang_instruction()
+        lang = self.get_language()
+        # Prepend strong lang instruction at the very beginning (before Code:/User request).
+        # This is critical for custom free-text asks like "nézd át a kódot".
+        # Also append a reminder at the end (some models follow tail instructions better after long code).
+        tail = f"\n\n(Remember: the entire answer must be in {lang}.)"
+        full_prompt = instr + prompt + tail
+        self._start_worker_thread("custom", "", full_prompt)
+
+    def fix_code_errors(self, code, prompt=""):
+        """Fix errors in the code using AI"""
+        instr = self._get_lang_instruction()
+        lang = self.get_language()
+        if not prompt:
+            task = "Task: Find and fix errors/bugs in the following code. Provide the corrected version and explain what was wrong and how you fixed it."
+            tail = f"\n\nNow provide the full corrected code + explanations in {lang} only."
+            prompt = f"{instr}{task}\n\nCode:\n{code}{tail}"
+        else:
+            prompt = f"{instr}{prompt}"
+
+        # Check cache first
+        cache_key = f"fix:{self.selected_model}:{hash(prompt)}"
+        if getattr(self, 'cache_enabled', False) and cache_key in self.cache:
+            # Return cached result immediately
+            import PyQt6.QtCore as QtCore
+            QtCore.QTimer.singleShot(0, lambda: self.fix_ready.emit(self.cache[cache_key]))
+            return
+
+        self._start_worker_thread("fix", code, prompt)
 
     def _start_worker_thread(self, request_type, code, prompt):
         """Start a worker thread for API calls"""
-        # Cancel previous request if still running
+        # Cancel previous request if still running.
+        # Use short wait + cancel flag (non-blocking) to avoid freezing the UI
+        # when the previous worker is stuck in a long ollama.generate (e.g. large model first load
+        # after a previous Suggest or preload that was cancelled).
+        # This was a major source of "UI freezes on second Suggest after cancel".
         if self.worker_thread and self.worker_thread.isRunning():
+            try:
+                self.worker_thread.cancel()
+            except Exception:
+                pass
             self.worker_thread.quit()
-            self.worker_thread.wait()
+            self.worker_thread.wait(100)  # short grace; let it finish in background if needed
 
         # Create and start new worker thread
         self.worker_thread = AIWorkerThread(
@@ -178,7 +283,9 @@ class AIAssistant(QtCore.QObject):
             request_type,
             self.use_anthropic_api,
             self.use_ollama,
-            self.timeout
+            self.timeout,
+            context_window_enabled=getattr(self, 'context_window_enabled', False),
+            context_window_size=getattr(self, 'context_window_size', 0)
         )
         self.worker_thread.result_ready.connect(self._handle_result)
         self.worker_thread.error_occurred.connect(self.error_occurred)
@@ -204,12 +311,23 @@ class AIAssistant(QtCore.QObject):
         elif request_type == "custom":
             print("[DEBUG] Emitting custom_ready")
             self.custom_ready.emit(result)  # ← NEW: emit signal for custom requests
+        elif request_type == "fix":
+            print("[DEBUG] Emitting fix_ready")
+            self.fix_ready.emit(result)
 
     def cancel_request(self):
-        """Cancel the current AI request"""
+        """Cancel the current AI request (non-blocking for UI)."""
         if self.worker_thread and self.worker_thread.isRunning():
+            try:
+                self.worker_thread.cancel()  # set the _cancelled flag for early exit where possible
+            except Exception:
+                pass
             self.worker_thread.quit()
-            self.worker_thread.wait()
+            # Do NOT do long blocking wait here — it freezes the main GUI thread
+            # when the worker is stuck in a long ollama.generate / HTTP request.
+            # Give a tiny grace period; the thread will exit when its current blocking
+            # call returns (or on next check of _cancelled).
+            self.worker_thread.wait(50)
 
 
 class AIWorkerThread(QThread):
@@ -219,7 +337,8 @@ class AIWorkerThread(QThread):
     error_occurred = pyqtSignal(str)
     progress_update = pyqtSignal(int)
 
-    def __init__(self, api_key, model, prompt, request_type, use_anthropic_api, use_ollama, timeout=30):
+    def __init__(self, api_key, model, prompt, request_type, use_anthropic_api, use_ollama, timeout=30,
+                 context_window_enabled=False, context_window_size=0):
         super().__init__()
         self.api_key = api_key
         self.model = model
@@ -228,6 +347,8 @@ class AIWorkerThread(QThread):
         self.use_anthropic_api = use_anthropic_api
         self.use_ollama = use_ollama
         self.timeout = timeout
+        self.context_window_enabled = context_window_enabled
+        self.context_window_size = context_window_size
         self._cancelled = False
 
     def cancel(self):
@@ -246,11 +367,33 @@ class AIWorkerThread(QThread):
             if self.model.startswith("ollama:") and self.use_ollama:
                 # Use Ollama
                 model_name = self.model[7:]  # Remove "ollama:" prefix
+                # Keep model loaded to avoid slow reloads from USB (faster like in terminal)
+                try:
+                    if hasattr(ollama, 'keepalive'):
+                        ollama.keepalive(model_name)
+                except Exception:
+                    pass
                 print(f"[DEBUG] Calling Ollama generate for {model_name}")
+                if self._cancelled:
+                    return
+                options = {
+                    "temperature": 0.6,
+                    "num_predict": 1536,
+                    "repeat_penalty": 1.25,
+                    "top_p": 0.9,
+                    "top_k": 40
+                }
+                # Safety / user-controlled context window (num_ctx).
+                # Only sent when the user explicitly enables the custom context dropdown.
+                # This is the "bekapcsolása a prioritás" part.
+                if getattr(self, 'context_window_enabled', False) and getattr(self, 'context_window_size', 0) > 0:
+                    options["num_ctx"] = self.context_window_size
+                    print(f"[DEBUG] Using custom num_ctx={self.context_window_size} for Ollama")
+
                 response = ollama.generate(
                     model=model_name,
                     prompt=self.prompt,
-                    options={"temperature": 0.7, "num_predict": 2048}
+                    options=options
                 )
 
                 if self._cancelled:

@@ -28,22 +28,44 @@ class EditorSplitter(QtWidgets.QWidget):
         self.splitter.setCollapsible(0, False)
         self.splitter.setCollapsible(1, False)
 
-        #self.editor.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.editor.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        #self.editor2.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.editor2.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         self.editor.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        #self.editor.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.editor2.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        #self.editor2.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         self.editor.modificationChanged.connect(self.textModified)
         self.editor2.modificationChanged.connect(self.textModified)
 
         if self.useData.SETTINGS["MiniMap"] == "True":
             self.minimap = MiniMap(self.editor, self)
-            mainLayout.addWidget(self.minimap)
+            # Enforce min/max width limits for the minimap (100px min, 400px max as requested)
+            # User can drag the splitter to adjust within bounds.
+            self.minimap.setMinimumWidth(100)
+            self.minimap.setMaximumWidth(400)
+            
+            # Use a QSplitter so the minimap width is user-adjustable by dragging
+            # the separator between the editor area and the minimap (VSCode-like).
+            content_splitter = QtWidgets.QSplitter(QtCore.Qt.Orientation.Horizontal)
+            content_splitter.addWidget(self.splitter)
+            content_splitter.addWidget(self.minimap)
+            content_splitter.setStretchFactor(0, 1)  # editor takes flexible space
+            content_splitter.setStretchFactor(1, 0)
+            # Load saved width if available (global for the app)
+            settings = QtCore.QSettings("PyCoder", "PyCoder")
+            saved_w = settings.value("minimapWidth", 150, type=int)
+            saved_w = max(100, min(400, saved_w))
+            content_splitter.setSizes([1000, saved_w])
+            # Save on resize (user drag)
+            def _save_mm_width(pos, idx):
+                if content_splitter.count() > 1:
+                    w = content_splitter.sizes()[1]
+                    settings.setValue("minimapWidth", w)
+                    settings.sync()
+            content_splitter.splitterMoved.connect(_save_mm_width)
+            mainLayout.addWidget(content_splitter)
+        else:
+            mainLayout.addWidget(self.splitter)
 
     def addSplitVertical(self):
         self.splitter.setOrientation(QtCore.Qt.Orientation.Vertical)

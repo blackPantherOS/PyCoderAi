@@ -23,8 +23,9 @@ class CreateWorkSpaceThread(QtCore.QThread):
     def run(self):
         self.errors = None
         try:
-            if not os.path.exists:
-                os.mkdir(self.path)
+            # Create the target directory (and parents) if it doesn't exist.
+            # Previous code had "if not os.path.exists:" (missing call) which never created anything.
+            os.makedirs(self.path, exist_ok=True)
         except:
             self.errors = traceback.format_exc()
         try:
@@ -57,17 +58,15 @@ class GetPathLine(QtWidgets.QWidget):
 
         homePath = QtCore.QDir().homePath()
 
-        # Todo: Workspace must unpack to the platform specific home
-        # directory by default
+        # Default suggestion for new workspace.
+        # "Create new" will create a "PyCoderProjects" subfolder inside this path.
+        # So choosing ~/Projects will result in workspace at ~/Projects/PyCoderProjects
         if sys.platform == 'win32':
-            path = os.path.join(homePath,
-                                "My Documents")
+            path = os.path.join(homePath, "My Documents")
         elif sys.platform == 'darwin':
-            path = os.path.join(homePath,
-                                "Documents")
+            path = os.path.join(homePath, "Documents")
         else:
-            path = os.path.join(homePath,
-                                "Projects")
+            path = os.path.join(homePath, "Projects")
         path = os.path.normpath(path)
         self.destinationLine.setText(path)
 
@@ -110,6 +109,9 @@ class WorkSpace(QtWidgets.QDialog):
         self.choiceBox = QtWidgets.QComboBox()
         self.choiceBox.addItem("Choose an existing one")
         self.choiceBox.addItem("Create new")
+        # For completely new installations (workspace=None or missing), default to "Create new"
+        # so the user doesn't immediately hit "Path does not exist."
+        self.choiceBox.setCurrentIndex(1)
         mainLayout.addWidget(self.choiceBox)
 
         self.getPathLine = GetPathLine()
@@ -173,7 +175,11 @@ class WorkSpace(QtWidgets.QDialog):
                     return
             else:
                 message = QtWidgets.QMessageBox.warning(
-                    self, "Workspace", "Path does not exist.")
+                    self, "Workspace",
+                    "Path does not exist.\n\n"
+                    "For a first-time setup, switch to 'Create new' (it is pre-selected for new installs), "
+                    "pick a parent folder (e.g. ~/Projects), and click Done. "
+                    "A 'PyCoderProjects' subfolder will be created and populated inside it.")
         else:
             self.okButton.setDisabled(True)
             self.cancelButton.setDisabled(True)

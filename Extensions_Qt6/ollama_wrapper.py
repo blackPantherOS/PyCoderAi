@@ -44,7 +44,8 @@ class OllamaWrapper:
                 "model": model,
                 "prompt": "Hello",
                 "stream": False,
-                "options": {"num_predict": 1}
+                "options": {"num_predict": 1},
+                "keep_alive": "10m"
             }
             response = requests.post(f"{self.base_url}/api/generate", json=data, timeout=30)
             response.raise_for_status()
@@ -60,7 +61,7 @@ class OllamaWrapper:
         if model not in self.loaded_models:
             return self.preload_model(model)
         try:
-            data = {"model": model, "prompt": "", "stream": False, "options": {"num_predict": 0}}
+            data = {"model": model, "prompt": "", "stream": False, "options": {"num_predict": 0}, "keep_alive": "10m"}
             response = requests.post(f"{self.base_url}/api/generate", json=data, timeout=5)
             return response.status_code == 200
         except Exception:
@@ -72,7 +73,8 @@ class OllamaWrapper:
             data = {
                 "model": model,
                 "prompt": prompt,
-                "stream": stream
+                "stream": stream,
+                "keep_alive": "10m"
             }
             if options:
                 data["options"] = options
