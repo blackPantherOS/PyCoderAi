@@ -1,7 +1,9 @@
 import os
 import re
-# FIXME QtXml is no longer supported.
-from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
+import json
+import xml.etree.ElementTree as ET  # for legacy XML snippet support (no QtXml)
+
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 
 class FinderThread(QtCore.QThread):
@@ -41,36 +43,50 @@ class FinderThread(QtCore.QThread):
             print(why)
 
         files = os.listdir(self.libraryDir)
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument()
         for i in range(len(files)):
             if self.stop:
                 break
             file = os.path.abspath(os.path.join(self.libraryDir, files[i]))
 
             try:
-                text = open(file, 'r').read()
+                with open(file, 'r', encoding='utf-8') as f:
+                    content = f.read().strip()
             except:
+                self.searchSoFar.emit(i)
                 continue
-            dom_document.setContent(text)
 
-            documentElement = dom_document.documentElement()
-            childElement = documentElement.firstChild().toElement()
-            while childElement.isNull() is False:
-                if childElement.nodeName() == 'comments':
-                    if (self.searchLoc == 0) or (self.searchLoc == 2):
-                        comments = childElement.firstChild().nodeValue()
-                        contains = search.search(comments)
-                        if contains:
-                            self.found.append(files[i])
-                elif childElement.nodeName() == 'code':
-                    if (self.searchLoc == 0) or (self.searchLoc == 1):
-                        code = childElement.firstChild().nodeValue()
-                        contains = search.search(code)
-                        if contains:
-                            if files[i] not in self.found:
-                                self.found.append(files[i])
-                childElement = childElement.nextSibling()
+            comments = ''
+            code = ''
+
+            if content.startswith('<'):
+                # Legacy XML support (no more QDomDocument)
+                try:
+                    root = ET.fromstring(content)
+                    for child in root:
+                        if child.tag == 'comments':
+                            comments = child.text or ''
+                        elif child.tag == 'code':
+                            code = child.text or ''
+                except Exception:
+                    pass
+            else:
+                # New JSON format
+                try:
+                    data = json.loads(content)
+                    comments = data.get('comments', '')
+                    code = data.get('code', '')
+                except Exception:
+                    pass
+
+            if (self.searchLoc == 0) or (self.searchLoc == 2):
+                if comments and search.search(comments):
+                    if files[i] not in self.found:
+                        self.found.append(files[i])
+            if (self.searchLoc == 0) or (self.searchLoc == 1):
+                if code and search.search(code):
+                    if files[i] not in self.found:
+                        self.found.append(files[i])
+
             self.searchSoFar.emit(i)
 
     def stopFind(self):

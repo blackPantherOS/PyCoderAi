@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyCoderAi 0.6.0\n"
 "Report-Msgid-Bugs-To: info@blackpantheros.eu\n"
-"POT-Creation-Date: 2026-06-06 12:13+0200\n"
+"POT-Creation-Date: 2026-06-13 15:17+0200\n"
 "PO-Revision-Date: 2024-02-28 12:52+0100\n"
 "Last-Translator: Barcza Károly <kbarcza@blackpanther.hu>\n"
 "Language-Team: \n"
@@ -18,77 +18,116 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.2.2\n"
 
-#: PyCoder6.py:64
+#: PyCoderAi.py:65
 msgid "Welcome to PyCoderAi! The used language for interface is: "
 msgstr ""
 
-#: PyCoder6.py:72
-msgid "PyCoder - Loading..."
+#: PyCoderAi.py:78
+msgid "PyCoderAi - Loading..."
 msgstr ""
 
-#: PyCoder6.py:81
+#: PyCoderAi.py:87
 msgid "Primary Monitor:"
 msgstr ""
 
-#: PyCoder6.py:82
+#: PyCoderAi.py:88
 msgid "Resolution:"
 msgstr ""
 
-#: PyCoder6.py:98
+#: PyCoderAi.py:109
 msgid "This application requires Python 3"
 msgstr ""
 
-#: PyCoder6.py:122 PyCoder6.py:123
+#: PyCoderAi.py:133 PyCoderAi.py:134 Extensions_Qt6/OllamaManager.py:427
+#: Extensions_Qt6/OllamaManager.py:557
 msgid "Start"
 msgstr ""
 
-#: PyCoder6.py:150
+#: PyCoderAi.py:156
 msgid "EDITOR"
 msgstr ""
 
-#: PyCoder6.py:153
+#: PyCoderAi.py:159
 msgid "LIBRARY"
 msgstr ""
 
-#: PyCoder6.py:193
-msgid "About PyCoder"
+#: PyCoderAi.py:179
+msgid "AI Chat"
 msgstr ""
 
-#: PyCoder6.py:193
+#: PyCoderAi.py:182 Extensions_Qt6/EditorWindow/EditorWindow.py:409
+msgid "Ollama"
+msgstr ""
+
+#: PyCoderAi.py:233
+msgid "About PyCoderAi"
+msgstr ""
+
+#: PyCoderAi.py:233
 msgid "More info of PyCoderAi "
 msgstr ""
 
-#: PyCoder6.py:200
+#: PyCoderAi.py:240
 msgid "Fullscreen"
 msgstr ""
 
-#: PyCoder6.py:206 Extensions_Qt6/Settings/GeneralSettings.py:13
+#: PyCoderAi.py:246 Extensions_Qt6/Settings/GeneralSettings.py:13
 #: Extensions_Qt6/Settings/SettingsWidget.py:16
+#: Extensions_Qt6/OllamaManager.py:402
 msgid "Settings"
 msgstr ""
 
-#: PyCoder6.py:207
-msgid "PyCoder Settings"
+#: PyCoderAi.py:247
+msgid "PyCoderAi Settings"
 msgstr ""
 
-#: PyCoder6.py:222 Extensions_Qt6/Projects/Projects.py:421
+#: PyCoderAi.py:273 Extensions_Qt6/Projects/Projects.py:345
+#: Extensions_Qt6/Start.py:130
 msgid "Open Project"
 msgstr ""
 
-#: PyCoder6.py:222
+#: PyCoderAi.py:273
 msgid "Project cannot be be found!"
 msgstr ""
 
-#: PyCoder6.py:248
-msgid "PyCoder - Start"
+#: PyCoderAi.py:306
+msgid "PyCoderAi - Start"
 msgstr ""
 
-#: PyCoder6.py:269
-msgid "PyCoder - "
+#: PyCoderAi.py:332
+msgid "PyCoderAi - "
 msgstr ""
 
-#: PyCoder6.py:269 Extensions_Qt6/EditorTabWidget.py:813
+#: PyCoderAi.py:332 Extensions_Qt6/EditorTabWidget.py:838
 msgid "Unsaved"
+msgstr ""
+
+#: temp/temp8.py:36
+msgid "Nyomtató állapotok"
+msgstr ""
+
+#: temp/temp8.py:39 temp/temp8.py:67 temp/temp8.py:143
+msgid "Nyomtató beállítások"
+msgstr ""
+
+#: temp/temp8.py:40
+msgid "Kilépés"
+msgstr ""
+
+#: temp/temp8.py:95
+msgid "Kapcsolat nincs"
+msgstr ""
+
+#: temp/temp8.py:98
+msgid "Pausában"
+msgstr ""
+
+#: temp/temp8.py:101
+msgid "Készen"
+msgstr ""
+
+#: temp/temp8.py:152
+msgid "Mentés"
 msgstr ""
 
 #: Extensions_Qt6/Refactor/Refactor.py:31
@@ -97,23 +136,23 @@ msgstr ""
 
 #: Extensions_Qt6/Refactor/Refactor.py:46
 #: Extensions_Qt6/Projects/NewProjectDialog.py:88
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:31
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:89
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:38
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:36
-#: Extensions_Qt6/Library/Library.py:89
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:32
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:90
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:39
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:43
+#: Extensions_Qt6/Library/Library.py:165
 msgid "Ok"
 msgstr ""
 
 #: Extensions_Qt6/Refactor/Refactor.py:51
 #: Extensions_Qt6/BottomWidgets/FindInFiles.py:123
 #: Extensions_Qt6/Projects/NewProjectDialog.py:92
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:36
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:94
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:43
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:41
-#: Extensions_Qt6/Settings/Keymap.py:35 Extensions_Qt6/Library/Library.py:44
-#: Extensions_Qt6/Library/Library.py:94
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:37
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:95
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:44
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:48
+#: Extensions_Qt6/Settings/Keymap.py:38 Extensions_Qt6/Library/Library.py:120
+#: Extensions_Qt6/Library/Library.py:170 Extensions_Qt6/AIPanel.py:422
 msgid "Cancel"
 msgstr ""
 
@@ -150,11 +189,11 @@ msgstr ""
 #: Extensions_Qt6/Refactor/Refactor.py:319
 #: Extensions_Qt6/Refactor/Refactor.py:334
 #: Extensions_Qt6/Refactor/Refactor.py:349
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:138
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:280
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:301
-#: Extensions_Qt6/Library/Library.py:336 Extensions_Qt6/Library/Library.py:337
-#: Extensions_Qt6/Library/Library.py:588 Extensions_Qt6/Library/Library.py:597
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:145
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:270
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:291
+#: Extensions_Qt6/Library/Library.py:412 Extensions_Qt6/Library/Library.py:413
+#: Extensions_Qt6/Library/Library.py:623 Extensions_Qt6/Library/Library.py:632
 msgid "Rename"
 msgstr ""
 
@@ -224,402 +263,417 @@ msgstr ""
 msgid "Usages: "
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:80
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:780
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:800
+#: Extensions_Qt6/EditorTabWidget.py:84
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:1066
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:1086
 msgid "Close"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:80
+#: Extensions_Qt6/EditorTabWidget.py:84
 msgid "Close Tab"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:82
+#: Extensions_Qt6/EditorTabWidget.py:86
 msgid "Copy File Path"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:83
+#: Extensions_Qt6/EditorTabWidget.py:87
 msgid "Copy Selected File Path"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:88
+#: Extensions_Qt6/EditorTabWidget.py:92
 msgid "Open File Location"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:93
+#: Extensions_Qt6/EditorTabWidget.py:97
 msgid "Clone"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:93
+#: Extensions_Qt6/EditorTabWidget.py:97
 msgid "Create a copy of current tab"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:98 Extensions_Qt6/EditorTabWidget.py:125
+#: Extensions_Qt6/EditorTabWidget.py:102 Extensions_Qt6/EditorTabWidget.py:129
 #: Extensions_Qt6/BottomWidgets/FindInFiles.py:363
 msgid "Reload"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:104 Extensions_Qt6/EditorTabWidget.py:105
+#: Extensions_Qt6/EditorTabWidget.py:108 Extensions_Qt6/EditorTabWidget.py:109
 msgid "Add to Favourites"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:126
+#: Extensions_Qt6/EditorTabWidget.py:130
 msgid "Do you really want to reload?"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:274
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:444
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:452
+#: Extensions_Qt6/EditorTabWidget.py:278
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:445
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:453
 msgid "New File"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:301
+#: Extensions_Qt6/EditorTabWidget.py:305
 msgid "Undo"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:302 Extensions_Qt6/EditorTabWidget.py:304
+#: Extensions_Qt6/EditorTabWidget.py:306 Extensions_Qt6/EditorTabWidget.py:308
 msgid "Undo last edit action"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:308
+#: Extensions_Qt6/EditorTabWidget.py:312
 msgid "Redo"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:309
+#: Extensions_Qt6/EditorTabWidget.py:313
 msgid "Redo last edit action"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:311
+#: Extensions_Qt6/EditorTabWidget.py:315
 msgid "Reddo last edit action"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:315 Extensions_Qt6/CodeEditor.py:535
+#: Extensions_Qt6/EditorTabWidget.py:319 Extensions_Qt6/CodeEditor.py:551
 msgid "Cut"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:316 Extensions_Qt6/EditorTabWidget.py:317
-#: Extensions_Qt6/CodeEditor.py:536
+#: Extensions_Qt6/EditorTabWidget.py:320 Extensions_Qt6/EditorTabWidget.py:321
+#: Extensions_Qt6/CodeEditor.py:552
 msgid "Cut selected text"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:321 Extensions_Qt6/CodeEditor.py:539
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:330
+#: Extensions_Qt6/EditorTabWidget.py:325
 #: Extensions_Qt6/BottomWidgets/RunWidget.py:331
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:299
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:332
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:300
+#: Extensions_Qt6/CodeEditor.py:555
 msgid "Copy"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:322 Extensions_Qt6/EditorTabWidget.py:323
-#: Extensions_Qt6/CodeEditor.py:540
+#: Extensions_Qt6/EditorTabWidget.py:326 Extensions_Qt6/EditorTabWidget.py:327
+#: Extensions_Qt6/CodeEditor.py:556
 msgid "Copy selected text"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:327 Extensions_Qt6/CodeEditor.py:543
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:307
+#: Extensions_Qt6/EditorTabWidget.py:331
 #: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:308
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:429
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:309
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:430
+#: Extensions_Qt6/CodeEditor.py:559
 msgid "Paste"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:328 Extensions_Qt6/CodeEditor.py:544
+#: Extensions_Qt6/EditorTabWidget.py:332 Extensions_Qt6/CodeEditor.py:560
 msgid "Paste text from clipboard"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:330
+#: Extensions_Qt6/EditorTabWidget.py:334
 msgid "Paste content from clipboard"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:338
+#: Extensions_Qt6/EditorTabWidget.py:342
 msgid "Indent"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:339 Extensions_Qt6/EditorTabWidget.py:341
+#: Extensions_Qt6/EditorTabWidget.py:343 Extensions_Qt6/EditorTabWidget.py:345
 msgid "Indent Region"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:347
+#: Extensions_Qt6/EditorTabWidget.py:351
 msgid "Unindent"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:348 Extensions_Qt6/EditorTabWidget.py:350
+#: Extensions_Qt6/EditorTabWidget.py:352 Extensions_Qt6/EditorTabWidget.py:354
 msgid "Unindent Region"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:355
+#: Extensions_Qt6/EditorTabWidget.py:359
 msgid "Write Lock"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:358
+#: Extensions_Qt6/EditorTabWidget.py:362
 msgid "Write lock to this tab"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:364
+#: Extensions_Qt6/EditorTabWidget.py:368
 msgid "Next Bookmark"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:366
+#: Extensions_Qt6/EditorTabWidget.py:370
 msgid "Find Next Bookmark in this code"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:371
+#: Extensions_Qt6/EditorTabWidget.py:375
 msgid "Previous Bookmark"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:373
+#: Extensions_Qt6/EditorTabWidget.py:377
 msgid "Find Previous Bookmark in this code"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:378 Extensions_Qt6/EditorTabWidget.py:914
+#: Extensions_Qt6/EditorTabWidget.py:382 Extensions_Qt6/EditorTabWidget.py:939
 msgid "Remove Bookmarks"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:380
+#: Extensions_Qt6/EditorTabWidget.py:384
 msgid "Remove All Placed Bookmarks"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:386
+#: Extensions_Qt6/EditorTabWidget.py:390
 msgid "New [.py]"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:387 Extensions_Qt6/EditorTabWidget.py:389
+#: Extensions_Qt6/EditorTabWidget.py:391 Extensions_Qt6/EditorTabWidget.py:393
 msgid "Create a new python file"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:394 Extensions_Qt6/EditorTabWidget.py:396
+#: Extensions_Qt6/EditorTabWidget.py:398 Extensions_Qt6/EditorTabWidget.py:400
 msgid "Create a new Xml file"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:401 Extensions_Qt6/EditorTabWidget.py:403
+#: Extensions_Qt6/EditorTabWidget.py:405 Extensions_Qt6/EditorTabWidget.py:407
 msgid "Create a new Html file"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:408 Extensions_Qt6/EditorTabWidget.py:410
+#: Extensions_Qt6/EditorTabWidget.py:412 Extensions_Qt6/EditorTabWidget.py:414
 msgid "Create a new Css file"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:415
+#: Extensions_Qt6/EditorTabWidget.py:419
 msgid "Open File..."
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:416
+#: Extensions_Qt6/EditorTabWidget.py:420
 msgid "Open python file"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:418
+#: Extensions_Qt6/EditorTabWidget.py:422
 msgid "Open file to editing"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:422 Extensions_Qt6/EditorTabWidget.py:1010
-#: Extensions_Qt6/EditorTabWidget.py:1131
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:683
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:153
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:257
+#: Extensions_Qt6/EditorTabWidget.py:426 Extensions_Qt6/EditorTabWidget.py:1035
+#: Extensions_Qt6/EditorTabWidget.py:1156
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:684
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:160
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:249
 msgid "Save"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:423
+#: Extensions_Qt6/EditorTabWidget.py:427
 msgid "Save file"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:424
+#: Extensions_Qt6/EditorTabWidget.py:428
 msgid "Save current file"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:430
+#: Extensions_Qt6/EditorTabWidget.py:434
 msgid "Save All"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:431
+#: Extensions_Qt6/EditorTabWidget.py:435
 msgid "Save All Changes"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:433
+#: Extensions_Qt6/EditorTabWidget.py:437
 msgid "Save All Changes in Current Project"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:436
+#: Extensions_Qt6/EditorTabWidget.py:440
 msgid "Save As..."
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:437
+#: Extensions_Qt6/EditorTabWidget.py:441
 msgid "Save file as..."
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:440
+#: Extensions_Qt6/EditorTabWidget.py:444
 msgid "Save Copy As..."
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:441
+#: Extensions_Qt6/EditorTabWidget.py:445
 msgid "Save a Copy As..."
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:448 Extensions_Qt6/Library/Library.py:343
-#: Extensions_Qt6/Library/Library.py:344
+#: Extensions_Qt6/EditorTabWidget.py:452 Extensions_Qt6/Library/Library.py:419
+#: Extensions_Qt6/Library/Library.py:420
 msgid "Print"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:449
+#: Extensions_Qt6/EditorTabWidget.py:453
 msgid "Print the content"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:456
+#: Extensions_Qt6/EditorTabWidget.py:460
 msgid "Split Vertical"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:457
+#: Extensions_Qt6/EditorTabWidget.py:461
 msgid "View Split Vertical"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:463
+#: Extensions_Qt6/EditorTabWidget.py:467
 msgid "Split Horizontal"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:464
+#: Extensions_Qt6/EditorTabWidget.py:468
 msgid "View Split Horizontal"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:469
+#: Extensions_Qt6/EditorTabWidget.py:473
 msgid "Remove Split"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:470
+#: Extensions_Qt6/EditorTabWidget.py:474
 msgid "Remove Editor Split"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:485
+#: Extensions_Qt6/EditorTabWidget.py:489
 msgid "File renamed or moved."
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:781
+#: Extensions_Qt6/EditorTabWidget.py:806
 msgid "Restored"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:781
+#: Extensions_Qt6/EditorTabWidget.py:806
 msgid " file(s) restored from previous crash."
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:814 Extensions_Qt6/EditorTabWidget.py:818
+#: Extensions_Qt6/EditorTabWidget.py:839 Extensions_Qt6/EditorTabWidget.py:843
 #, python-brace-format
 msgid "Coding: {0}"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:915
+#: Extensions_Qt6/EditorTabWidget.py:940
 msgid "Do you really want to remove all bookmarks?"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:1009
+#: Extensions_Qt6/EditorTabWidget.py:1034
 #, python-brace-format
 msgid "Save changes to '{0}'?"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:1131
+#: Extensions_Qt6/EditorTabWidget.py:1156
 msgid ""
 "Error saving file!\n"
 "\n"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:1147
+#: Extensions_Qt6/EditorTabWidget.py:1172
 msgid "Select File"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:1149
+#: Extensions_Qt6/EditorTabWidget.py:1174
 msgid ""
 "All Files (*);;Console (*.py);;No Console (*.pyw);;Xml (*.xml);;Html (*."
 "html);;Css (*.css)"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:1158
+#: Extensions_Qt6/EditorTabWidget.py:1183
 msgid "Untitled.xml"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:1161
+#: Extensions_Qt6/EditorTabWidget.py:1186
 msgid "Untitled.html"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:1164
+#: Extensions_Qt6/EditorTabWidget.py:1189
 msgid "Untitled.css"
 msgstr ""
 
-#: Extensions_Qt6/EditorTabWidget.py:1166
+#: Extensions_Qt6/EditorTabWidget.py:1191
 msgid "Untitled.py"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:172
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:193
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:181
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:308
 #: Extensions_Qt6/Settings/GeneralSettings.py:36
 msgid "Project"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:175
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:184
 msgid "Classes"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:181
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:190
 msgid "File System"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:194
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:204
+msgid "Project Region"
+msgstr ""
+
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:238
+msgid "Tools Panel"
+msgstr ""
+
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:309
 #: Extensions_Qt6/Projects/NewProjectDialog.py:63
 #: Extensions_Qt6/Projects/NewProjectDialog.py:104
 #: Extensions_Qt6/Projects/NewProjectDialog.py:132
 #: Extensions_Qt6/Projects/ProjectManager/ProjectManager.py:42
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:942
-#: Extensions_Qt6/Projects/Projects.py:57
-#: Extensions_Qt6/Projects/Projects.py:69
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:902
+#: Extensions_Qt6/Projects/Projects.py:59
+#: Extensions_Qt6/Projects/Projects.py:71
 msgid "Desktop Application"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:206
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:321
 #: Extensions_Qt6/Projects/NewProjectDialog.py:96
 msgid "Help"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:214
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:329
 msgid "Recent Files"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:236
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:351
 msgid "Lines: 0"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:240
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:355
 msgid "Coding: utf-8"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:244
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:359
 msgid "Uptime: 0min"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:253
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:368
+#: Extensions_Qt6/AIPanel.py:380
+msgid "AI Assistant"
+msgstr ""
+
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:376
 msgid "Output"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:258
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:383
 #: Extensions_Qt6/Settings/GeneralSettings.py:229
 msgid "Alerts"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:263
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:388
 msgid "Bookmarks"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:267
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:392
 msgid "Tasks"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:270
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:395
 msgid "Messages"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:274
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:399
 #: Extensions_Qt6/BottomWidgets/RunWidget.py:56
 #: Extensions_Qt6/BottomWidgets/RunWidget.py:58
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:730
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:739
 msgid "Profiler"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:279
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:412
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:404
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:545
 #: Extensions_Qt6/BottomWidgets/FindInFiles.py:433
 #: Extensions_Qt6/BottomWidgets/FindInFiles.py:446
 #: Extensions_Qt6/BottomWidgets/FindInFiles.py:450
@@ -627,143 +681,140 @@ msgstr ""
 msgid "Find-in-Files"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:284
-msgid "AI Assistant"
-msgstr ""
-
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:333
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:334
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:466
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:467
 msgid "Goto Line"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:335
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:468
 msgid "Can enter a number and it will jump to there"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:338
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:471
 msgid "Switch Views"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:338
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:471
 msgid "Switch to Overview/Diff View"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:340
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:473
 msgid "Open a switch bar to switch between Overview/Diff View"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:343
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:476
 msgid "Exit"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:343
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:476
 msgid "Exit the application"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:345
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:367
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:478
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:500
 msgid "Finish work and close the PyCoder6"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:350
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:720
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:483
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:853
 msgid "User Guide"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:350
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:483
 msgid "User Guide of Application"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:352
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:485
 msgid "User Guide of Application.."
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:354
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:730
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:487
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:863
 msgid "Python Manuals"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:355
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:488
 msgid "Open the Python Manuals"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:357
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:490
 msgid "Open Python manuals if installed on your system"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:359
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:360
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:492
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:493
 msgid "Check For Updates"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:362
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:495
 msgid "Check the PyCoder6 updates"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:364
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:365
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:497
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:498
 msgid "Send Feedback"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:372
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:505
 msgid "Run File"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:373
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:506
 msgid "Run current file only"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:377
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:667
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:687
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:510
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:676
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:696
 msgid "Run Project"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:378
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:511
 msgid "Run The Full Project"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:379
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:512
 msgid "Run the full project.."
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:383
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:516
 #: Extensions_Qt6/BottomWidgets/FindInFiles.py:283
+#: Extensions_Qt6/OllamaManager.py:431 Extensions_Qt6/OllamaManager.py:561
 msgid "Stop"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:384
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:517
 msgid "Stop execution"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:385
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:518
 msgid "Press stop to finish current execution.."
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:389
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:522
 msgid "Set Run"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:390
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:523
 msgid "Set Run Parameters"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:391
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:524
 msgid "Set parameters for run. Debug level, etc."
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:397
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:530
 #: Extensions_Qt6/BottomWidgets/FindInFiles.py:290
 msgid "Find"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:398
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:399
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:531
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:532
 msgid "Find files or content"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:405
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:406
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:538
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:539
 #: Extensions_Qt6/BottomWidgets/FindInFiles.py:112
 #: Extensions_Qt6/BottomWidgets/FindInFiles.py:119
 #: Extensions_Qt6/BottomWidgets/FindInFiles.py:319
@@ -771,145 +822,145 @@ msgstr ""
 msgid "Replace"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:408
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:541
 msgid "Replace a pattern to another"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:413
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:414
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:546
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:547
 msgid "A pattern find-in-files"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:419
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:552
 msgid "Add To Library"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:420
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:422
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:553
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:555
 msgid "Add current module to Library"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:427
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:429
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:560
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:562
 msgid "Clear History"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:434
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:567
 msgid "Writepad"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:434
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:567
 msgid "Open internal Writepad"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:436
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:569
 msgid "Open internal WritePad"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:440
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:573
 #: Extensions_Qt6/Projects/ProjectManager/ProjectManager.py:55
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:945
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:905
 msgid "Build"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:441
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:574
 msgid "Build project to binary"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:443
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:576
 msgid "Build this project to static binary"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:447
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:580
 msgid "Open Build"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:447
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:580
 msgid "Open Build Folder"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:449
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:582
 msgid "Open the build folder where placed binary of project"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:454
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:587
 msgid "Configuration"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:454
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:587
 msgid "Open Configuration"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:456
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:589
 msgid "Open Configuration Dialog"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:461
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:594
 msgid "Export as Zip..."
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:461
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:594
 msgid "Project Export as Zip"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:463
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:596
 msgid "Export full project as a zip file..."
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:469
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:602
 msgid "Close Project"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:469
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:602
 msgid "Close this project"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:471
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:604
 msgid "It only closes the project, files won't be deleted."
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:560
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:693
 msgid "Menu"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:622
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:755
 #: Extensions_Qt6/FileExplorer.py:284
 #: Extensions_Qt6/Projects/ProjectManager/Build.py:309
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:285
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:563
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:286
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:564
 msgid "Open"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:623
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:756
 msgid "File is unavailable!"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:640
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:773
 msgid "No Recent Files"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:658
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:791
 msgid "Recent Files:"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:659
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:792
 msgid "Recent files history has been cleared!"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:675
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:678
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:808
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:811
 msgid "min"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:679
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:812
 msgid "Uptime: "
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:720
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:853
 msgid "Will be available when i am out of beta."
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:731
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:864
 msgid ""
 "Failed to launch the Python Manuals!\n"
 "\n"
@@ -917,90 +968,22 @@ msgid ""
 "installed in your system."
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:759
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:892
 #, python-brace-format
 msgid "Line {0} : Column {1}"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:762
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:895
 msgid "Lines: "
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:779
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:1065
 msgid "Close running program?"
 msgstr ""
 
-#: Extensions_Qt6/EditorWindow/EditorWindow.py:798
+#: Extensions_Qt6/EditorWindow/EditorWindow.py:1084
 #, python-brace-format
 msgid "Save changes to \"{0}\"?"
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:393 Extensions_Qt6/CodeEditor.py:408
-#: Extensions_Qt6/BottomWidgets/TasksWidget.py:39
-#: Extensions_Qt6/Settings/GeneralSettings.py:189
-#: Extensions_Qt6/Settings/GeneralSettings.py:203
-#: Extensions_Qt6/Settings/GeneralSettings.py:345
-#: Extensions_Qt6/Settings/GeneralSettings.py:359
-msgid "Line"
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:395
-#: Extensions_Qt6/Settings/GeneralSettings.py:204
-#: Extensions_Qt6/Settings/GeneralSettings.py:348
-msgid "Background"
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:549 Extensions_Qt6/CodeEditor.py:550
-msgid "Select to Matching Brace"
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:556 Extensions_Qt6/CodeEditor.py:557
-msgid "Insert Snippet..."
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:562 Extensions_Qt6/CodeEditor.py:563
-msgid "Toggle Bookmark"
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:568 Extensions_Qt6/CodeEditor.py:569
-msgid "Toggle Line Breakpoint"
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:573 Extensions_Qt6/CodeEditor.py:574
-msgid "Take Snapshot"
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:579
-msgid "Zoom"
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:580
-msgid "Zoom in/out"
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:584 Extensions_Qt6/CodeEditor.py:585
-msgid "Indentation Guide"
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:605
-#: Extensions_Qt6/BottomWidgets/FindInFiles.py:180
-msgid "View"
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:702
-msgid "Snapshot"
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:703
-msgid "Take a snapshot of the current module state?"
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:762
-msgid "Could not fetch snippets."
-msgstr ""
-
-#: Extensions_Qt6/CodeEditor.py:767
-msgid "No snippets available."
 msgstr ""
 
 #: Extensions_Qt6/PathLineEdit.py:19
@@ -1029,17 +1012,17 @@ msgid "Home"
 msgstr ""
 
 #: Extensions_Qt6/FileExplorer.py:208
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:332
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:333
 msgid "Collapse All"
 msgstr ""
 
 #: Extensions_Qt6/FileExplorer.py:209
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:333
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:334
 msgid "Collapse Tree"
 msgstr ""
 
 #: Extensions_Qt6/FileExplorer.py:213
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:343
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:344
 msgid "Show All Files"
 msgstr ""
 
@@ -1098,18 +1081,18 @@ msgid "License"
 msgstr ""
 
 #: Extensions_Qt6/About.py:60
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:490
-#: Extensions_Qt6/Library/Library.py:189
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:491
+#: Extensions_Qt6/Library/Library.py:265
 msgid "Name"
 msgstr ""
 
 #: Extensions_Qt6/About.py:60
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:499
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:500
 msgid "Version"
 msgstr ""
 
 #: Extensions_Qt6/About.py:60
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:495
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:496
 msgid "Author"
 msgstr ""
 
@@ -1126,18 +1109,18 @@ msgid "Run Parameters"
 msgstr ""
 
 #: Extensions_Qt6/BottomWidgets/RunWidget.py:55
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:479
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:485
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:491
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:692
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:727
-#: Extensions_Qt6/Projects/Projects.py:124
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:488
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:494
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:500
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:701
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:736
+#: Extensions_Qt6/Projects/Projects.py:106
 msgid "Run"
 msgstr ""
 
 #: Extensions_Qt6/BottomWidgets/RunWidget.py:57
 #: Extensions_Qt6/BottomWidgets/RunWidget.py:60
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:733
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:742
 msgid "Trace"
 msgstr ""
 
@@ -1189,70 +1172,70 @@ msgstr ""
 msgid "<No Python installed>"
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:438
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:441
 #, python-brace-format
 msgid ">>> Exit: {0}\n"
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:479
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:488
 msgid "No Python interpreter to run your code. Please install Python."
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:485
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:494
 msgid "Python must be installed for virtual environment to work."
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:491
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:500
 msgid "The current Python interpreter is not available."
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:504
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:513
 #, python-brace-format
 msgid ">>> Running: {0} <arguments={1}>\n"
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:509
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:518
 #, python-brace-format
 msgid ">>> Running: {0} <arguments=None>\n"
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:534
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:543
 #, python-brace-format
 msgid ">>> Trace Execution: {0} <arguments={1}>\n"
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:537
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:546
 #, python-brace-format
 msgid ">>> Trace Execution: {0} <arguments=None>\n"
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:643
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:652
 #, python-brace-format
 msgid ">>> Profiling: {0} <arguments={1}>\n"
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:646
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:655
 #, python-brace-format
 msgid ">>> Profiling: {0} <arguments=None>\n"
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:668
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:677
 msgid "There are errors in your project. Run anyway?"
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:688
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:697
 msgid "Main script is missing: "
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:693
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:702
 msgid "Source code must be present!"
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:738
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:747
 msgid "User action required!"
 msgstr ""
 
-#: Extensions_Qt6/BottomWidgets/RunWidget.py:739
+#: Extensions_Qt6/BottomWidgets/RunWidget.py:748
 msgid ""
 "<h2>User action required.</h2>The running mode is using an old parameter "
 "(<b>Type: {}</b>), so you need to set it again.Just open the running "
@@ -1262,6 +1245,11 @@ msgstr ""
 
 #: Extensions_Qt6/BottomWidgets/FindInFiles.py:112
 msgid "There is nothing to replace."
+msgstr ""
+
+#: Extensions_Qt6/BottomWidgets/FindInFiles.py:180
+#: Extensions_Qt6/CodeEditor.py:621
+msgid "View"
 msgstr ""
 
 #: Extensions_Qt6/BottomWidgets/FindInFiles.py:184
@@ -1348,6 +1336,15 @@ msgid "Type"
 msgstr ""
 
 #: Extensions_Qt6/BottomWidgets/TasksWidget.py:39
+#: Extensions_Qt6/Settings/GeneralSettings.py:189
+#: Extensions_Qt6/Settings/GeneralSettings.py:203
+#: Extensions_Qt6/Settings/GeneralSettings.py:345
+#: Extensions_Qt6/Settings/GeneralSettings.py:359
+#: Extensions_Qt6/CodeEditor.py:409 Extensions_Qt6/CodeEditor.py:424
+msgid "Line"
+msgstr ""
+
+#: Extensions_Qt6/BottomWidgets/TasksWidget.py:39
 msgid "Task"
 msgstr ""
 
@@ -1400,7 +1397,7 @@ msgid "Current"
 msgstr ""
 
 #: Extensions_Qt6/Projects/NewProjectDialog.py:47
-#: Extensions_Qt6/Projects/Projects.py:495
+#: Extensions_Qt6/Projects/Projects.py:429 Extensions_Qt6/Start.py:125
 msgid "New Project"
 msgstr ""
 
@@ -1422,13 +1419,13 @@ msgid "Type: "
 msgstr ""
 
 #: Extensions_Qt6/Projects/NewProjectDialog.py:69
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:568
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:569
 msgid "GUI"
 msgstr ""
 
 #: Extensions_Qt6/Projects/NewProjectDialog.py:70
 #: Extensions_Qt6/Projects/ProjectManager/Build.py:27
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:569
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:570
 msgid "Console"
 msgstr ""
 
@@ -1441,37 +1438,37 @@ msgid "Import Sources: "
 msgstr ""
 
 #: Extensions_Qt6/Projects/ProjectManager/Build.py:38
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:542
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:543
 msgid "Compress"
 msgstr ""
 
 #: Extensions_Qt6/Projects/ProjectManager/Build.py:43
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:534
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:535
 msgid "Don't Optimize"
 msgstr ""
 
 #: Extensions_Qt6/Projects/ProjectManager/Build.py:45
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:535
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:536
 msgid "Optimize"
 msgstr ""
 
 #: Extensions_Qt6/Projects/ProjectManager/Build.py:47
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:536
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:537
 msgid "Optimize (Remove Doc Strings)"
 msgstr ""
 
 #: Extensions_Qt6/Projects/ProjectManager/Build.py:50
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:547
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:548
 msgid "Copy Dependencies"
 msgstr ""
 
 #: Extensions_Qt6/Projects/ProjectManager/Build.py:55
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:554
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:555
 msgid "Append Script to Exe"
 msgstr ""
 
 #: Extensions_Qt6/Projects/ProjectManager/Build.py:60
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:561
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:562
 msgid "Append Script to Library"
 msgstr ""
 
@@ -1540,50 +1537,50 @@ msgstr ""
 msgid "Export Failed"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:133
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:134
 msgid "Ignore Syntax Errors"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:134
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:135
 msgid "Don't Ignore Syntax Errors"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:140
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:141
 msgid "Ignore Bad Imports"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:141
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:142
 msgid "Don't Ignore Bad Imports"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:149
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:150
 msgid "Max History Items: "
-msgstr ""
-
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:160
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:171
-msgid "Extensions_Qt6"
 msgstr ""
 
 #: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:161
 #: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:172
-msgid "Ignored Resources"
+msgid "Extensions_Qt6"
 msgstr ""
 
 #: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:162
 #: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:173
+msgid "Ignored Resources"
+msgstr ""
+
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:163
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:174
 msgid "Custom Folders"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:171
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:172
 msgid "Specify which files should be considered python files."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:172
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:173
 msgid "Specify which files and folders to ignore in the project."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:174
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:175
 msgid ""
 "By default rope searches the project for finding source folders\n"
 "(folders that should be searched for finding modules).\n"
@@ -1595,518 +1592,522 @@ msgid ""
 "src/my_source_folder' for instance."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:280
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:281
 msgid "Version: "
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:309
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:352
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:359
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:379
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:389
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:391
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:398
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:310
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:353
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:360
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:380
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:390
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:392
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:399
 msgid "Install"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:313
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:417
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:314
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:418
 msgid "Upgrade"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:317
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:427
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:429
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:440
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:318
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:428
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:430
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:441
 msgid "Uninstall"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:353
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:354
 msgid ""
 "This will install a new virtual environment.\n"
 "\n"
 "Proceed?"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:359
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:398
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:360
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:399
 msgid ""
 "There is no Python installation to install against.\n"
 "\n"
 "Please make sure Python is installed."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:365
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:404
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:366
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:405
 msgid "Choose Python installation"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:379
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:380
 msgid "Install virtual environment completed."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:382
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:383
 msgid "Failed Install"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:389
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:390
 msgid "No virtual environment to upgrade."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:392
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:393
 msgid ""
 "This will upgrade the current the virtual environment.\n"
 "\n"
 "Proceed?"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:417
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:418
 msgid "Upgrade virtual environment completed."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:420
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:421
 msgid "Failed Upgrade"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:427
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:428
 msgid "No virtual environment to uninstall."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:430
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:431
 msgid ""
 "This will uninstall the current virtual environment.\n"
 "\n"
 "Proceed?"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:440
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:441
 msgid "Uninstall virtual environment completed."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:443
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:444
 msgid "Failed Uninstall"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:483
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:484
 msgid "Version Information"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:503
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:504
 msgid "Description"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:507
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:508
 msgid "Comments"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:511
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:512
 msgid "Company"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:515
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:516
 msgid "Copyright"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:518
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:519
 msgid "Trademarks"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:522
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:523
 msgid "Product"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:528
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:529
 msgid "Options"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:539
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:540
 msgid "Speed"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:543
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:544
 msgid "Don't Compress"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:544
-#: Extensions_Qt6/Library/Library.py:189
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:545
+#: Extensions_Qt6/Library/Library.py:265 Extensions_Qt6/OllamaManager.py:494
 msgid "Size"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:548
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:549
 msgid "Don't Copy Dependencies"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:551
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:552
 msgid "Depends"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:555
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:556
 msgid "Don't Append Script to Exe"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:558
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:559
 msgid "ToExe"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:562
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:563
 msgid "Don't Append Script to Library"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:565
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:566
 msgid "ToLibs"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:574
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:575
 msgid "Window Type"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:586
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:587
 msgid "Add"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:594
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:147
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:309
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:327
-#: Extensions_Qt6/Library/Library.py:329 Extensions_Qt6/Library/Library.py:330
-#: Extensions_Qt6/Library/Library.py:558 Extensions_Qt6/Library/Library.py:568
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:595
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:154
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:299
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:317
+#: Extensions_Qt6/Library/Library.py:405 Extensions_Qt6/Library/Library.py:406
+#: Extensions_Qt6/Library/Library.py:593 Extensions_Qt6/Library/Library.py:603
+#: Extensions_Qt6/OllamaManager.py:639
 msgid "Remove"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:600
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:601
 msgid "Icon"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:606
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:607
 msgid "Advanced"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:622
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:623
 msgid "List of modules to include"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:623
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:624
 msgid "List of modules to exclude"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:624
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:625
 msgid "List of constants to include"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:625
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:636
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:626
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:637
 msgid "List of packages to include"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:627
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:628
 msgid ""
 "Replace all the paths in modules found in the given paths with the given "
 "replacement string; each value is of the form path=replacement_string; path "
 "can be * which means all paths not already specified"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:631
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:632
 msgid "List of files to include"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:633
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:634
 msgid ""
 "Name of file to add to the zip file or a specification of the form "
 "name=arcname which will specify the archive name to use"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:638
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:639
 msgid ""
 "Libraries that need not be included becausethey would normally be expected "
 "to be found on the target system orbecause they are part of a package which "
 "requires independentinstallation anyway."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:643
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:644
 msgid ""
 "File names of libraries which must be included for thefrozen executable to "
 "work."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:646
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:647
 msgid "Paths of directories which contain files that should be included."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:649
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:650
 msgid ""
 "Paths of directories which contain files that should notbe included, "
 "generally because they contain standard system libraries."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:733
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:734
 msgid "Icon Files (*.png *.svg);;All Files (*)"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:741
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:742
 msgid "Add Icon"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:742
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:743
 msgid "Icon with the same name already exists. Replace?"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:766
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:767
 msgid "Failed Remove"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:878
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:812
 msgid "Save Profile"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:878
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:812
 msgid "Saving failed!"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:927
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:887
 msgid "Project Configuration"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:949
+#: Extensions_Qt6/Projects/ProjectManager/ConfigureProject.py:909
 msgid "Virtual Environment"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:23
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:20
-#: Extensions_Qt6/Library/Library.py:70
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:24
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:27
+#: Extensions_Qt6/Library/Library.py:146
 msgid "Name:"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:59
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:63
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:69
-#: Extensions_Qt6/Library/Library.py:116
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:60
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:70
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:76
+#: Extensions_Qt6/Library/Library.py:192
 msgid "Unavailable"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:62
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:72
-#: Extensions_Qt6/Library/Library.py:119
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:63
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:79
+#: Extensions_Qt6/Library/Library.py:195
 msgid "Available"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:250
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:251
 msgid "New..."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:254
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:255
 msgid "Add Existing..."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:286
 #: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:287
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:288
 msgid "File"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:290
 #: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:291
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:321
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:292
 #: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:322
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:323
 msgid "Directory"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:295
 #: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:296
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:297
 msgid "Package"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:303
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:304
 msgid "Backup this.."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:304
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:305
 msgid "Create a hot backup"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:311
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:542
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:554
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:312
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:543
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:555
 msgid "Delete"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:312
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:313
 msgid "Delete Selection"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:316
 #: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:317
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:318
 msgid "Files"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:326
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:327
 msgid "Set as Main Script"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:338
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:339
 msgid "Expand All"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:339
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:340
 msgid "Expand Tree"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:407
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:408
 msgid "Error"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:431
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:495
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:518
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:432
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:496
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:519
 msgid ""
 "' already exists in the destination directory.\n"
 "\n"
 "Would you like to replace it?"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:440
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:504
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:526
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:441
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:505
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:527
 msgid "Preparing to copy..."
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:453
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:454
 msgid "File creation failed!"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:457
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:463
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:458
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:464
 msgid "New Directory"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:464
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:465
 msgid "Failed to create directory!"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:468
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:478
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:469
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:479
 msgid "New Package"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:479
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:480
 msgid "Package creation failed!"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:483
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:484
 msgid "Select Files"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:485
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:486
 msgid "All Files (*);;Text Files (*.txt)"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:493
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:494
 msgid "Add Existing Files"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:509
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:510
 msgid "Select Directory"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:516
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:517
 msgid "Add Existing Directory"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:538
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:539
 msgid "Add Existing Items"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:538
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:539
 msgid ""
 "Failed to complete copy!\n"
 "\n"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:543
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:544
 msgid "Permanently delete '"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:544
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:545
 msgid "' from the project?"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:555
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:556
 msgid ""
 "Failed to delete item!\n"
 "\n"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:564
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:565
 msgid "Directory not found!"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:678
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:676
 #: Extensions_Qt6/Settings/GeneralSettings.py:58
-#: Extensions_Qt6/Library/Library.py:209
+#: Extensions_Qt6/Library/Library.py:285
 msgid "Search"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:762
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:760
 msgid "Search Results:"
 msgstr ""
 
-#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:853
+#: Extensions_Qt6/Projects/ProjectManager/ProjectView/ProjectView.py:851
 msgid "<No results found>"
 msgstr ""
 
-#: Extensions_Qt6/Projects/Projects.py:422
+#: Extensions_Qt6/Projects/Projects.py:346
 msgid ""
 "Failed:\n"
 "\n"
 msgstr ""
 
-#: Extensions_Qt6/Projects/Projects.py:476
+#: Extensions_Qt6/Projects/Projects.py:410
 msgid "Failed Open"
 msgstr ""
 
-#: Extensions_Qt6/Projects/Projects.py:477
+#: Extensions_Qt6/Projects/Projects.py:411
 msgid ""
 "Problem opening project: \n"
 "\n"
 msgstr ""
 
-#: Extensions_Qt6/Projects/Projects.py:490
+#: Extensions_Qt6/Projects/Projects.py:424
 msgid "Creating project... please wait!"
 msgstr ""
 
-#: Extensions_Qt6/Projects/Projects.py:496
+#: Extensions_Qt6/Projects/Projects.py:430
 msgid ""
 "Failed to create project:\n"
 "\n"
 msgstr ""
 
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:102
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:109
 msgid "Lexer"
 msgstr ""
 
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:104
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:111
 #: Extensions_Qt6/Settings/GeneralSettings.py:87
 msgid "Editor"
 msgstr ""
 
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:129
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:136
 msgid "New"
 msgstr ""
 
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:158
-#: Extensions_Qt6/Settings/Keymap.py:106
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:165
+#: Extensions_Qt6/Settings/Keymap.py:109
 msgid "Apply"
 msgstr ""
 
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:176
-#: Extensions_Qt6/Settings/Keymap.py:102
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:183
+#: Extensions_Qt6/Settings/Keymap.py:105
 msgid "Default"
 msgstr ""
 
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:258
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:250
 #, python-brace-format
-msgid "Saving failed: {0}"
+msgid ""
+"Saving scheme failed!\n"
+"\n"
+"{0}"
 msgstr ""
 
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:302
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:292
 #, python-brace-format
 msgid ""
 "Rename failed!\n"
@@ -2114,12 +2115,12 @@ msgid ""
 "{0}"
 msgstr ""
 
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:308
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:298
 #, python-brace-format
 msgid "Do you really want to remove '{0}'?"
 msgstr ""
 
-#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:328
+#: Extensions_Qt6/Settings/ColorScheme/ColorScheme.py:318
 #, python-brace-format
 msgid ""
 "Removing failed!\n"
@@ -2127,27 +2128,27 @@ msgid ""
 "{0}"
 msgstr ""
 
-#: Extensions_Qt6/Settings/Keymap.py:11
+#: Extensions_Qt6/Settings/Keymap.py:14
 msgid "New Shortcut"
 msgstr ""
 
-#: Extensions_Qt6/Settings/Keymap.py:31
+#: Extensions_Qt6/Settings/Keymap.py:34
 msgid "Accept"
 msgstr ""
 
-#: Extensions_Qt6/Settings/Keymap.py:79
+#: Extensions_Qt6/Settings/Keymap.py:82
 msgid "Keymap"
 msgstr ""
 
-#: Extensions_Qt6/Settings/Keymap.py:90
+#: Extensions_Qt6/Settings/Keymap.py:93
 msgid "Function"
 msgstr ""
 
-#: Extensions_Qt6/Settings/Keymap.py:90 Extensions_Qt6/Settings/Keymap.py:130
+#: Extensions_Qt6/Settings/Keymap.py:93 Extensions_Qt6/Settings/Keymap.py:133
 msgid "Shortcut"
 msgstr ""
 
-#: Extensions_Qt6/Settings/Keymap.py:131
+#: Extensions_Qt6/Settings/Keymap.py:134
 #, python-brace-format
 msgid ""
 "Shortcut already in use by '{0}'\n"
@@ -2155,11 +2156,11 @@ msgid ""
 "Replace it?"
 msgstr ""
 
-#: Extensions_Qt6/Settings/Keymap.py:225
+#: Extensions_Qt6/Settings/Keymap.py:220
 msgid "Default Keymap"
 msgstr ""
 
-#: Extensions_Qt6/Settings/Keymap.py:226
+#: Extensions_Qt6/Settings/Keymap.py:221
 msgid ""
 "Setting keymap to default will wipe away your current keymap.\n"
 "\n"
@@ -2226,6 +2227,12 @@ msgstr ""
 msgid "Edge Mode"
 msgstr ""
 
+#: Extensions_Qt6/Settings/GeneralSettings.py:204
+#: Extensions_Qt6/Settings/GeneralSettings.py:348
+#: Extensions_Qt6/CodeEditor.py:411
+msgid "Background"
+msgstr ""
+
 #: Extensions_Qt6/Settings/GeneralSettings.py:218
 msgid "Assistant"
 msgstr ""
@@ -2274,49 +2281,57 @@ msgstr ""
 msgid "AI Settings"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:29 Extensions_Qt6/Library/Library.py:323
-#: Extensions_Qt6/Library/Library.py:324
+#: Extensions_Qt6/Library/Library.py:105 Extensions_Qt6/Library/Library.py:399
+#: Extensions_Qt6/Library/Library.py:400
 msgid "Edit Comment"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:40
+#: Extensions_Qt6/Library/Library.py:116
 msgid "OK"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:207
+#: Extensions_Qt6/Library/Library.py:283
 msgid "Modules"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:221 Extensions_Qt6/Library/Library.py:445
+#: Extensions_Qt6/Library/Library.py:297 Extensions_Qt6/Library/Library.py:494
 msgid "More"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:240
+#: Extensions_Qt6/Library/Library.py:316
 msgid "Comments:"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:246
+#: Extensions_Qt6/Library/Library.py:322
 msgid "Source:"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:349 Extensions_Qt6/Library/Library.py:350
-#: Extensions_Qt6/Library/Library.py:622
+#: Extensions_Qt6/Library/Library.py:425 Extensions_Qt6/Library/Library.py:426
+#: Extensions_Qt6/Library/Library.py:657
 msgid "Export Library"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:355 Extensions_Qt6/Library/Library.py:356
+#: Extensions_Qt6/Library/Library.py:431 Extensions_Qt6/Library/Library.py:432
 msgid "Toggle Sidebar View"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:512
+#: Extensions_Qt6/Library/Library.py:488
+msgid "Library"
+msgstr ""
+
+#: Extensions_Qt6/Library/Library.py:489
+msgid "Failed to save comment changes."
+msgstr ""
+
+#: Extensions_Qt6/Library/Library.py:562
 msgid " items"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:569
+#: Extensions_Qt6/Library/Library.py:604
 msgid "Failed to remove item!"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:598
+#: Extensions_Qt6/Library/Library.py:633
 #, python-brace-format
 msgid ""
 "Renaming failed!\n"
@@ -2324,26 +2339,474 @@ msgid ""
 "{0}"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:630 Extensions_Qt6/Library/Library.py:639
-#: Extensions_Qt6/Library/Library.py:688
+#: Extensions_Qt6/Library/Library.py:665 Extensions_Qt6/Library/Library.py:674
+#: Extensions_Qt6/Library/Library.py:699
 msgid "Library Add"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:631
+#: Extensions_Qt6/Library/Library.py:666
 msgid "Source code must be present to add to library!"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:638
+#: Extensions_Qt6/Library/Library.py:673
 msgid ""
 "File already exists in Library.\n"
 "\n"
 "Replace it?"
 msgstr ""
 
-#: Extensions_Qt6/Library/Library.py:689
+#: Extensions_Qt6/Library/Library.py:700
 #, python-brace-format
 msgid ""
 "Adding to Library failed!\n"
 "\n"
 "{0}"
+msgstr ""
+
+#: Extensions_Qt6/Start.py:72
+msgid "Getting started..."
+msgstr ""
+
+#: Extensions_Qt6/Start.py:95
+msgid ""
+"For the sake of convenience, most tasks are handled in the context of a "
+"project. Start editing your files by first creating a project or opening an "
+"existing one."
+msgstr ""
+
+#: Extensions_Qt6/Start.py:105
+msgid "Recent Projects:"
+msgstr ""
+
+#: Extensions_Qt6/Start.py:137
+msgid "Project Homepage"
+msgstr ""
+
+#: Extensions_Qt6/CodeEditor.py:565 Extensions_Qt6/CodeEditor.py:566
+msgid "Select to Matching Brace"
+msgstr ""
+
+#: Extensions_Qt6/CodeEditor.py:572 Extensions_Qt6/CodeEditor.py:573
+msgid "Insert Snippet..."
+msgstr ""
+
+#: Extensions_Qt6/CodeEditor.py:578 Extensions_Qt6/CodeEditor.py:579
+msgid "Toggle Bookmark"
+msgstr ""
+
+#: Extensions_Qt6/CodeEditor.py:584 Extensions_Qt6/CodeEditor.py:585
+msgid "Toggle Line Breakpoint"
+msgstr ""
+
+#: Extensions_Qt6/CodeEditor.py:589 Extensions_Qt6/CodeEditor.py:590
+msgid "Take Snapshot"
+msgstr ""
+
+#: Extensions_Qt6/CodeEditor.py:595
+msgid "Zoom"
+msgstr ""
+
+#: Extensions_Qt6/CodeEditor.py:596
+msgid "Zoom in/out"
+msgstr ""
+
+#: Extensions_Qt6/CodeEditor.py:600 Extensions_Qt6/CodeEditor.py:601
+msgid "Indentation Guide"
+msgstr ""
+
+#: Extensions_Qt6/CodeEditor.py:718
+msgid "Snapshot"
+msgstr ""
+
+#: Extensions_Qt6/CodeEditor.py:719
+msgid "Take a snapshot of the current module state?"
+msgstr ""
+
+#: Extensions_Qt6/CodeEditor.py:778
+msgid "Could not fetch snippets."
+msgstr ""
+
+#: Extensions_Qt6/CodeEditor.py:783
+msgid "No snippets available."
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:394
+msgid "Status"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:398
+msgid "Models"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:412
+msgid "Ollama Status"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:416
+msgid "🔴 Checking..."
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:418
+msgid "Status:"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:421
+msgid "Version:"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:424
+msgid "Installed models:"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:435 Extensions_Qt6/OllamaManager.py:565
+msgid "Restart"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:439
+msgid "Refresh"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:448
+msgid "Hardware"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:453
+msgid "RAM:"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:456
+msgid "CPU Cores:"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:459
+msgid "GPU:"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:463
+msgid "Small models (≤3 GB)"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:464
+msgid "Medium models (3-5 GB)"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:465
+msgid "Large models (5+ GB)"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:466
+msgid "Unknown"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:469
+msgid "Recommended:"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:481
+msgid "Installed Models"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:488
+msgid "Recommended Models"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:494
+msgid "Model"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:494
+msgid "Tier"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:494
+msgid "Action"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:527
+msgid "Installation"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:531
+msgid ""
+"Ollama can run fully offline. Install it using the official script below.\n"
+"Requires sudo (root) access. Models are downloaded separately via the Models "
+"tab."
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:537
+msgid "Install Ollama"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:548
+msgid "Service Control"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:551
+msgid "Start/Stop/Restart the Ollama service. Requires sudo access."
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:574
+msgid "Terminal Output"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:585
+msgid "Clear Output"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:598
+msgid "🟡 Not installed"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:608
+msgid "🟢 Running"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:618
+msgid "🔴 Stopped"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:622
+msgid "Not running"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:632
+msgid "No models installed"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:680
+msgid "Small"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:680
+msgid "Medium"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:680
+msgid "Large"
+msgstr ""
+
+#: Extensions_Qt6/OllamaManager.py:697
+msgid "Pull"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:403
+msgid "Model:"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:409 Extensions_Qt6/AIPanel.py:1002
+msgid "Preload"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:411
+msgid "Preload selected model into memory"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:417
+msgid "Auto-preload"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:418
+msgid "Automatically preload the last selected model on startup (Ollama only)"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:424
+msgid "Cancel current AI request"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:429
+msgid "Suggest"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:431
+msgid "Get AI suggestions for code improvements"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:435
+msgid "Debug"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:437
+msgid "Find bugs and errors in the code"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:441
+msgid "Explain"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:443
+msgid "Get AI explanation of the code"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:447
+msgid "Fix"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:449
+msgid "Get AI suggestions to fix errors"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:455
+msgid "Hungarian"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:455
+msgid "English"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:455
+msgid "Slovak"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:455
+msgid "German"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:463
+msgid "Simple"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:464
+msgid "2-Model Chain"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:465
+msgid "3-Model Chain"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:466
+msgid "Full Pipeline"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:469
+msgid "Simple: single model only (fastest, for simple questions).\n"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:470
+msgid "2-Model Chain: interpreter → coder (faster, no review).\n"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:471
+msgid "3-Model Chain: interpreter → coder → reviewer (best quality).\n"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:472
+msgid ""
+"Full Pipeline: interpreter → coder → reviewer + fix loop (old "
+"OrchestrationManager)."
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:475
+msgid "AI Mode:"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:484
+msgid "Model used as interpreter (analysis) in chain/pipeline modes.\n"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:485
+msgid "Leave as 'Auto' to auto-select a small model, or pick one manually."
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:487
+msgid "Helper:"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:499
+msgid "Model used as reviewer in 3-model chain / pipeline.\n"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:500
+msgid "Leave as 'Auto' to reuse the Helper model (saves RAM)."
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:502
+msgid "Reviewer:"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:515
+msgid "Context window"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:517
+msgid "Enable custom context window size (num_ctx) for Ollama models.\n"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:518
+msgid "When disabled the model uses its own default.\n"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:519
+msgid "Enabling this is the safety net for large files / long conversations."
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:526
+msgid "Model default"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:527
+msgid "4k (4096)"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:528
+msgid "8k (8192)"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:529
+msgid "16k (16384)"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:530
+msgid "32k (32768)"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:597
+msgid ""
+"Type your question or instruction for the AI... (Enter = send, Shift+Enter = "
+"new line)"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:618
+msgid "Send"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:620
+msgid "Send (or Enter)"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:623
+msgid "Clear"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:624
+msgid "Clear prompt"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:629
+msgid "Decrease font size"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:633
+msgid "Increase font size"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:637
+msgid "🗑 Chat"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:638
+msgid "Clear chat history"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:658
+msgid "Done"
+msgstr ""
+
+#: Extensions_Qt6/AIPanel.py:995
+msgid "Loaded"
+msgstr ""
+
+#: Extensions_Qt6/AIAssistant.py:742
+msgid ""
+"AI response: This is a demo response. The actual AI API is not available at "
+"the moment."
 msgstr ""

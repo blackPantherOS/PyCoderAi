@@ -4,8 +4,9 @@ import sys
 import traceback
 import logging
 
-# FIXME QtXml is no longer supported.
-from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
+import xml.etree.ElementTree as ET  # QtXml migration
+
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from Extensions_Qt6.FileExplorer import FileExplorer
 from Extensions_Qt6.BottomWidgets.FindInFiles import FindInFiles
@@ -27,13 +28,21 @@ from Extensions_Qt6 import StyleSheet
 from Extensions_Qt6.EditorWindow.BuildStatusWidget import BuildStatusWidget
 from Extensions_Qt6.EditorWindow.VerticalSplitter import VerticalSplitter
 from Extensions_Qt6.BottomWidgets.Profiler import Profiler
+from Extensions_Qt6.OllamaManager import OllamaManager
 
 
-class EditorWindow(QtWidgets.QWidget):
+class EditorWindow(QtWidgets.QMainWindow):
+    """
+    Per-project editor window, now a QMainWindow so that its internal
+    regions (project side panel, bottom tools panel, and editor area)
+    can be turned into real QDockWidgets. This allows the user to
+    drag, float, rearrange, tab, and dock the "projekt régió" (side)
+    and the "alsó panel" (bottom) around the editor within the project view.
+    """
 
     def __init__(self, projectPathDict, library, busyWidget,
                  colorScheme, useData, app, parent):
-        QtWidgets.QWidget.__init__(self, parent)
+        QtWidgets.QMainWindow.__init__(self, parent)
 
         self.app = app
         self.useData = useData
@@ -47,11 +56,6 @@ class EditorWindow(QtWidgets.QWidget):
         self.busyWidget = busyWidget
         self.buildStatusWidget = BuildStatusWidget(self.app, self.useData)
 
-        mainLayout = QtWidgets.QVBoxLayout()
-        mainLayout.setContentsMargins(0, 0, 0, 0)
-        mainLayout.setSpacing(0)
-        self.setLayout(mainLayout)
-
         self.standardToolbar = QtWidgets.QToolBar("Standard")
         self.standardToolbar.setMovable(False)
         self.standardToolbar.setIconSize(QtCore.QSize(22,22))
@@ -62,26 +66,37 @@ class EditorWindow(QtWidgets.QWidget):
         #self.standardToolbar.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
         self.standardToolbar.setMaximumHeight(64)
         self.standardToolbar.setObjectName("StandardToolBar")
-        mainLayout.addWidget(self.standardToolbar)
 
+        # Editor region container (will be the central widget)
+        editor_central = QtWidgets.QWidget()
+        editor_vbox = QtWidgets.QVBoxLayout(editor_central)
+        editor_vbox.setContentsMargins(0, 0, 0, 0)
+        editor_vbox.setSpacing(0)
+
+        # Add toolbar to the editor region
+        editor_vbox.addWidget(self.standardToolbar)
+
+        # The 'widget' that will hold the editorTabWidget + search + find dashboard
         widget = QtWidgets.QWidget()
-        vbox = QtWidgets.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout(widget)
         vbox.setContentsMargins(0, 0, 0, 0)
         vbox.setSpacing(0)
-        widget.setLayout(vbox)
+        editor_vbox.addWidget(widget)
 
+        # We keep vSplitter/hSplitter/sideSplitter/bottomStack for compatibility
+        # with widgets that were passed them and for loading old per-project layout state.
+        # The docking system (see below) now handles the visual layout of side and bottom.
         self.vSplitter = VerticalSplitter()
-        mainLayout.addWidget(self.vSplitter)
-
         self.hSplitter = QtWidgets.QSplitter()
         self.hSplitter.setObjectName("hSplitter")
-
-        self.vSplitter.addWidget(self.hSplitter)
-
+        self.sideSplitter = QtWidgets.QSplitter()
+        self.sideSplitter.setObjectName("sidebarItem")
+        self.sideSplitter.setOrientation(QtCore.Qt.Orientation.Horizontal)
         self.bottomStack = QtWidgets.QStackedWidget()
-        self.vSplitter.addWidget(self.bottomStack)
 
-        self.hSplitter.addWidget(widget)
+        # Note: we do not add the splitters to any layout here.
+        # The side will go to a left dock, bottom to a bottom dock,
+        # editor_central will be set as central widget.
 
         self.bottomStackSwitcher = StackSwitcher(self.bottomStack)
         self.bottomStackSwitcher.setStyleSheet(StyleSheet.bottomSwitcherStyle)
@@ -155,19 +170,13 @@ class EditorWindow(QtWidgets.QWidget):
         self.outline = Outline(
             self.useData, self.editorTabWidget)
 
-        self.sideSplitter = QtWidgets.QSplitter()
-        self.sideSplitter.setObjectName("sidebarItem")
-        self.sideSplitter.setOrientation(QtCore.Qt.Orientation.Horizontal)
-        self.hSplitter.addWidget(self.sideSplitter)
-
-        #self.sideSplitter.setStretchFactor(1, 0)
-        #vector self.sideSplitter.addWidget(self.outline)
-
+        # Side content container (will be placed in a dock, not in old splitters)
         self.sideBottomTab = QtWidgets.QTabWidget()
         self.sideBottomTab.setObjectName("sideBottomTab")
-        self.sideSplitter.addWidget(self.sideBottomTab)
 
-    
+        # (old splitter adds removed; docking system handles layout now)
+        # We still keep sideSplitter for legacy saved state restore (it won't be the visual container).
+
         self.sideBottomTab.addTab(self.projectManager.projectView, QtGui.QIcon(
             os.path.join("Resources", "images", "tree")), _("Project"))
 
@@ -179,6 +188,112 @@ class EditorWindow(QtWidgets.QWidget):
         self.fileExplorer.fileActivated.connect(self.editorTabWidget.loadfile)
         self.sideBottomTab.addTab(self.fileExplorer, QtGui.QIcon(
             os.path.join("Resources", "images", "tree")), _("File System"))
+
+        # Add the tab to the (legacy) sideSplitter so that old saved 'sidesplitter' state can be restored without error.
+        # The actual visible side panel will be the one in the dock (reparented).
+        self.sideSplitter.addWidget(self.sideBottomTab)
+
+        # ------------------------------------------------------------------
+        # Make the main regions dockable inside this EditorWindow (QMainWindow)
+        # ------------------------------------------------------------------
+        # 1. Central = editor region (toolbar + editor + search + find dashboard)
+        self.setCentralWidget(editor_central)
+
+        # 2. Project region dock (the side tab: Project / Classes / File System)
+        #    This is "a projekt régió"
+        project_dock = QtWidgets.QDockWidget(_("Project Region"), self)
+        project_dock.setObjectName("ProjectDock")
+        project_dock.setWidget(self.sideBottomTab)
+        project_dock.setAllowedAreas(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea |
+                                     QtCore.Qt.DockWidgetArea.RightDockWidgetArea)
+        project_dock.setFeatures(
+            QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable |
+            QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable |
+            QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
+        )
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, project_dock)
+        self.projectDock = project_dock
+
+        # 3. Bottom panel dock (the entire alsó panel with all tools + switcher)
+        #    This is "az egész alsó panelt".
+        #    Allowed areas now include Left/Right too (for ultrawide monitors),
+        #    in addition to the traditional Bottom/Top. The internal VBoxLayout
+        #    will adapt when the dock is placed on the side.
+        bottom_container = QtWidgets.QWidget()
+        bottom_layout = QtWidgets.QVBoxLayout(bottom_container)
+        bottom_layout.setContentsMargins(0, 0, 0, 0)
+        bottom_layout.setSpacing(0)
+        bottom_layout.addWidget(self.bottomStack)  # panels/content on top
+
+        # switcher buttons below the panels, left-aligned, keep original button widths
+        # (not stretched full width)
+        switcher_bar = QtWidgets.QWidget()
+        switcher_hbox = QtWidgets.QHBoxLayout(switcher_bar)
+        switcher_hbox.setContentsMargins(0, 0, 0, 0)
+        switcher_hbox.setSpacing(0)
+        switcher_hbox.addWidget(self.bottomStackSwitcher)
+        switcher_hbox.addStretch(1)
+        bottom_layout.addWidget(switcher_bar)
+
+        bottom_dock = QtWidgets.QDockWidget(_("Tools Panel"), self)
+        bottom_dock.setObjectName("BottomDock")
+        bottom_dock.setWidget(bottom_container)
+        bottom_dock.setAllowedAreas(
+            QtCore.Qt.DockWidgetArea.BottomDockWidgetArea |
+            QtCore.Qt.DockWidgetArea.TopDockWidgetArea |
+            QtCore.Qt.DockWidgetArea.LeftDockWidgetArea |
+            QtCore.Qt.DockWidgetArea.RightDockWidgetArea
+        )
+        bottom_dock.setFeatures(
+            QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable |
+            QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable |
+            QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
+        )
+
+        # Allow full collapsing of the bottom panel by dragging below current min height.
+        # The stack (panels) can shrink to 0; the switcher bar will remain as the bottom control.
+        # This restores the old VerticalSplitter behavior where you could fully close the bottom
+        # when not needed.
+        self.bottomStack.setMinimumHeight(0)
+        switcher_bar.setMinimumHeight(0)
+        bottom_container.setMinimumHeight(0)
+        bottom_dock.setMinimumHeight(0)
+
+        # Prefer shrinking the stack over the bar
+        self.bottomStack.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Preferred,
+            QtWidgets.QSizePolicy.Policy.Ignored
+        )
+
+        self.addDockWidget(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea, bottom_dock)
+        self.bottomDock = bottom_dock
+
+        # Flags to protect dock restore and the "X = return to main" logic from each other.
+        self._docks_restoring = False
+        self._docks_restored = False
+
+        # User's requested behavior for closable docks:
+        # When the user clicks the X (close) on a docked panel (Project Region or Bottom Panel),
+        # do NOT hide/leave it closed. Instead, put the panel back into the main window
+        # (re-dock it to its home area). This way the "close" acts as "return to main layout".
+        # The panels remain movable and floatable.
+        #
+        # We use eventFilter on Close events instead of visibilityChanged, because
+        # visibilityChanged fires too often (during restore, show, tab changes, etc.)
+        # and was causing the docks to become "locked" (non-movable) as a regression.
+        self.projectDock.installEventFilter(self)
+        self.bottomDock.installEventFilter(self)
+
+        # Defer dock layout restore until after the parent layout (stacked widget in outer QMainWindow)
+        # has assigned our final size. Otherwise restoreState may apply relative dock sizes to an
+        # uninitialized geometry, causing default sizes on next open.
+        # This ensures the user's last resized dock widths/heights (project region + bottom panel) are remembered.
+        QtCore.QTimer.singleShot(0, self._restoreDockLayout)
+
+        # Note: the editor region itself stays as central widget (standard for IDEs).
+        # The project region and bottom panel are now fully dockable/rearrangeable/floatable
+        # inside this project's view. User can drag their title bars, dock to other sides,
+        # float as separate windows, tab them together, etc.
 
         # create menus
         self.mainMenu = QtWidgets.QMenu()
@@ -244,6 +359,14 @@ class EditorWindow(QtWidgets.QWidget):
         self.uptimeLabel.setText(_("Uptime: 0min"))
         self.statusbar.addPermanentWidget(self.uptimeLabel)
 
+        # For QMainWindow, use the native status bar (placed at the very bottom of this project window)
+        self.setStatusBar(self.statusbar)
+
+        # ── AI Panel is FIRST (tab index 0, shown by default) ──
+        self.aiPanel = AIPanel(self.bottomStackSwitcher)
+        self.addBottomWidget(self.aiPanel,
+                             QtGui.QIcon(os.path.join("Resources", "images", "hire-me")), _("AI Assistant"))
+
         self.runWidget = RunWidget(
             self.bottomStackSwitcher, self.projectData[
                 "settings"], self.useData,
@@ -251,6 +374,8 @@ class EditorWindow(QtWidgets.QWidget):
             self.runProjectAct, self.stopRunAct, self.runFileAct)
         self.addBottomWidget(self.runWidget,
                              QtGui.QIcon(os.path.join("Resources", "images", "graphic-design")),  _("Output"))
+        # Give RunWidget reference to the stack so it can switch itself visible when content appears
+        self.runWidget.bottomStack = self.bottomStack
 
         self.assistantWidget = Assistant(
             self.editorTabWidget, self.bottomStackSwitcher)
@@ -278,20 +403,19 @@ class EditorWindow(QtWidgets.QWidget):
         self.addBottomWidget(self.findInFiles,
                              QtGui.QIcon(os.path.join("Resources", "images", "attibutes")), _("Find-in-Files"))
 
-        # Initialize AI Panel
-        self.aiPanel = AIPanel(self.bottomStackSwitcher)
-        self.addBottomWidget(self.aiPanel,
-                             QtGui.QIcon(os.path.join("Resources", "images", "hire-me")), _("AI Assistant"))
+        # ── Ollama Manager as last tab ──
+        self.ollamaManager = OllamaManager(self.bottomStackSwitcher)
+        self.addBottomWidget(self.ollamaManager,
+                             QtGui.QIcon(os.path.join("Resources", "images", "lightning")), _("Ollama"))
+        print("[DEBUG] OllamaManager added to bottom panel as last tab")
 
+        # Disable the default first-button highlight — AI Panel is set as current below
         self.bottomStackSwitcher.setDefault()
+        # Default to AIPanel (AI Assistant) on startup. Only switch to Output (Run/Kimenet) when it gets active content (see RunWidget).
+        self.bottomStackSwitcher.setCurrentWidget(self.aiPanel)
 
-        hbox = QtWidgets.QHBoxLayout()
-        hbox.setContentsMargins(0, 0, 0, 0)
-        hbox.setSpacing(0)
-        hbox.addWidget(self.bottomStackSwitcher)
-        hbox.addStretch(1)
-        hbox.addWidget(self.statusbar)
-        mainLayout.addLayout(hbox)
+        # Note: bottom switcher + stack are placed inside the "Bottom Panel" dock (see dock creation below).
+        # The statusbar is set via self.setStatusBar() above. No need for the old mainLayout hbox.
 
         self.uptime = 0
         self.uptimeTimer = QtCore.QTimer()
@@ -299,32 +423,41 @@ class EditorWindow(QtWidgets.QWidget):
         self.uptimeTimer.timeout.connect(self.updateUptime)
         self.uptimeTimer.start()
 
-        # remember layout
-        if projectPathDict['root'] in self.useData.OPENED_PROJECTS:
-            settings = QtCore.QSettings("PyCoder", "PyCoder")
-            settings.beginGroup(projectPathDict['root'])
+        # remember layout (legacy splitter states from before dock refactor;
+        # wrapped to avoid crashes on old saved data that doesn't match current
+        # number of sections in the (now mostly unused for layout) splitters)
+        # We relax the OPENED_PROJECTS guard (same reason as for dockstate):
+        # on first open in a session the project may not be in the list yet when
+        # EditorWindow is constructed, causing saved sizes not to be applied.
+        settings = QtCore.QSettings("PyCoder", "PyCoder")
+        settings.beginGroup(projectPathDict['root'])
+        try:
             self.hSplitter.restoreState(settings.value('hsplitter'))
             self.vSplitter.restoreState(settings.value('vsplitter'))
             self.sideSplitter.restoreState(
                 settings.value('sidesplitter'))
             self.vSplitter.updateStatus()
             self.writePad.setGeometry(settings.value('writepad'))
-            settings.endGroup()
+        except Exception:
+            pass  # old layout data incompatible with new dock-based structure; ignore
+        settings.endGroup()
 
         self.setKeymap()
 
     def resizeView(self, hview, vview):
         hSizes = self.hSplitter.sizes()
         vSizes = self.vSplitter.sizes()
-        if hview == 1:
-            self.hSplitter.setSizes([hSizes[0] + 2, hSizes[1] - 2])
-        elif hview == -1:
-            self.hSplitter.setSizes([hSizes[0] - 2, hSizes[1] + 2])
+        if len(hSizes) >= 2:
+            if hview == 1:
+                self.hSplitter.setSizes([hSizes[0] + 2, hSizes[1] - 2])
+            elif hview == -1:
+                self.hSplitter.setSizes([hSizes[0] - 2, hSizes[1] + 2])
 
-        if vview == 1:
-            self.vSplitter.setSizes([vSizes[0] + 2, vSizes[1] - 2])
-        elif vview == -1:
-            self.vSplitter.setSizes([vSizes[0] - 2, vSizes[1] + 2])
+        if len(vSizes) >= 2:
+            if vview == 1:
+                self.vSplitter.setSizes([vSizes[0] + 2, vSizes[1] - 2])
+            elif vview == -1:
+                self.vSplitter.setSizes([vSizes[0] - 2, vSizes[1] + 2])
 
     def createActions(self):
         self.gotoLineAct = \
@@ -769,7 +902,160 @@ class EditorWindow(QtWidgets.QWidget):
         settings.setValue('vsplitter', self.vSplitter.saveState())
         settings.setValue('sidesplitter', self.sideSplitter.saveState())
         settings.setValue('writepad', self.writePad.geometry())
+        # Save the user's dock layout (new dockable panels: project region + bottom panel)
+        settings.setValue('dockstate', self.saveState())
         settings.endGroup()
+
+        # Persist the current open tabs (the "last opened files") as well when
+        # saving UI state on project switch. This fixes the regression where
+        # tabs were not restored on re-open (restoreSession only saw stale/empty
+        # session file because save only happened on full project close before).
+        try:
+            self.editorTabWidget.saveSession()
+        except Exception:
+            pass
+
+    def _restoreDockLayout(self):
+        """Restore the user's dock layout (sizes, positions, floating state etc.)
+        for the project region and bottom panel docks.
+        Called via QTimer.singleShot(0) so that the parent layout (the stacked
+        projectWindowStack inside the outer QMainWindow) has already assigned
+        our final size. This is required for restoreState to correctly apply
+        the saved relative dock widths/heights instead of defaults.
+
+        We always attempt dock restore if a saved 'dockstate' exists (even on
+        first open in the session), because the previous guard on OPENED_PROJECTS
+        prevented saved layouts from being applied for newly opened projects.
+        """
+        settings = QtCore.QSettings("PyCoder", "PyCoder")
+        settings.beginGroup(self.projectPathDict['root'])
+        restored_something = False
+        try:
+            dock_state = settings.value('dockstate')
+            if dock_state:
+                self._docks_restoring = True
+                try:
+                    self.restoreState(dock_state)
+                    restored_something = True
+                    # Re-apply movability etc. after restoreState. Some Qt versions
+                    # or complex parent layouts (QStackedWidget) can leave docks
+                    # in a temporarily non-interactive state.
+                    self.projectDock.setFeatures(
+                        QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable |
+                        QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable |
+                        QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
+                    )
+                    self.bottomDock.setFeatures(
+                        QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable |
+                        QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable |
+                        QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
+                    )
+                finally:
+                    self._docks_restoring = False
+            # Mark as restored (so showEvent doesn't keep re-trying).
+            # Even if there was no saved state, the initial addDockWidget
+            # calls in __init__ set up the default layout we want.
+            self._docks_restored = True
+        except Exception:
+            self._docks_restoring = False
+            # Still mark done to avoid repeated attempts
+            self._docks_restored = True
+            pass
+        settings.endGroup()
+
+        # Post-restore sanity for our main panels.
+        # If after restoreState a panel has no dock area (e.g. it was "closed"
+        # in an old saved state from before we made X mean "return to main"),
+        # force it into its home area. This ensures the panels are always
+        # usable and movable, without overriding user-saved positions/sizes
+        # when the saved state did include them.
+        for dock, home_area in [
+            (self.projectDock, QtCore.Qt.DockWidgetArea.LeftDockWidgetArea),
+            (self.bottomDock, QtCore.Qt.DockWidgetArea.BottomDockWidgetArea),
+        ]:
+            if self.dockWidgetArea(dock) == QtCore.Qt.DockWidgetArea.NoDockWidgetArea:
+                self.addDockWidget(home_area, dock)
+                dock.setVisible(True)
+                dock.setFloating(False)
+                dock.setFeatures(
+                    QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable |
+                    QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable |
+                    QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
+                )
+
+        return restored_something
+
+    def eventFilter(self, obj, event):
+        """Intercept Close events on our docks.
+        This implements the user's request: clicking the X on a "kidokkolt" panel
+        (Project Region or Tools Panel) does not actually close/hide it.
+        Instead we immediately put it back ("tegye vissza") into the main window
+        docked at its home area.
+
+        Using Close event (instead of visibilityChanged) is much less noisy.
+        visibilityChanged fires on every show/hide during restore, window show,
+        internal tab switches, etc. That was causing constant addDockWidget calls
+        which locked the docks (regression in movability and restore).
+
+        Close event only fires on actual user X click (or programmatic close()).
+        We consume the event so the dock doesn't hide, then force re-dock.
+        """
+        if event.type() == QtCore.QEvent.Type.Close:
+            if obj is self.projectDock or obj is self.bottomDock:
+                # Consume the close so it doesn't hide/remove the dock from layout.
+                event.accept()
+                # Defer the re-dock to let Qt finish the current close attempt cleanly.
+                QtCore.QTimer.singleShot(0, lambda d=obj: self._forceRedockDockToMainWindow(d))
+                return True  # event filtered
+        return super().eventFilter(obj, event)
+
+    def _forceRedockDockToMainWindow(self, dock):
+        """Safely force a dock (that the user tried to close with X) back into
+        the main EditorWindow layout at its "home" area.
+        Called via singleShot(0) to avoid recursion and dock state issues.
+        """
+        if dock is self.projectDock:
+            area = QtCore.Qt.DockWidgetArea.LeftDockWidgetArea
+        elif dock is self.bottomDock:
+            area = QtCore.Qt.DockWidgetArea.BottomDockWidgetArea
+        else:
+            return
+
+        try:
+            # Block signals during the forced re-dock to prevent any
+            # secondary visibilityChanged emissions from re-triggering logic.
+            dock.blockSignals(True)
+            dock.setFloating(False)
+            dock.setVisible(True)
+            self.addDockWidget(area, dock)
+            # Re-apply features after re-docking (defensive).
+            dock.setFeatures(
+                QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable |
+                QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable |
+                QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
+            )
+        finally:
+            dock.blockSignals(False)
+
+    def showEvent(self, event):
+        """Ensure dock layout is restored once we have real geometry.
+        The deferred singleShot in __init__ may run before this EditorWindow
+        is the current widget in the outer QStackedWidget or before the outer
+        window has final size. Retrying on first show fixes "default layout only"
+        and "docks not movable" symptoms for many users.
+        """
+        super().showEvent(event)
+        if not getattr(self, '_docks_restored', False):
+            # One more deferred attempt now that we are visible.
+            QtCore.QTimer.singleShot(0, self._tryRestoreDocksOnce)
+
+    def _tryRestoreDocksOnce(self):
+        """Wrapper so we only attempt restore once from showEvent path."""
+        if not getattr(self, '_docks_restored', False):
+            self._restoreDockLayout()
+            # If there was no saved state, still mark as done so we don't
+            # keep trying on every show.
+            self._docks_restored = True
 
     def restoreSession(self):
         self.editorTabWidget.restoreSession()
@@ -821,48 +1107,57 @@ class EditorWindow(QtWidgets.QWidget):
         return True
 
     def loadProjectData(self):
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument()
-        file = open(os.path.join(self.projectPathDict[
-                    "root"], "Data", "projectdata.xml"), "r")
-        x = dom_document.setContent(file.read())
-        file.close()
-
-        elements = dom_document.documentElement()
-        node = elements.firstChild()
+        # QtXml migration: use ElementTree for legacy projectdata.xml
+        projectdata_path = os.path.join(self.projectPathDict["root"], "Data", "projectdata.xml")
+        try:
+            tree = ET.parse(projectdata_path)
+            root = tree.getroot()
+        except Exception as e:
+            print("Failed to parse projectdata.xml:", e)
+            self.projectData = {
+                "shortcuts": [],
+                "favourites": [],
+                "recentfiles": [],
+                "settings": {"LastCloseSuccessful": "True", "Closed": "False"},
+                "launchers": {}
+            }
+            return
 
         shortcuts = []
         recentfiles = []
         favourites = []
         launchers = {}
-
         settingsList = []
-        while node.isNull() is False:
-            property = node.toElement()
-            sub_node = property.firstChild()
-            while sub_node.isNull() is False:
-                sub_prop = sub_node.toElement()
-                if node.nodeName() == "shortcuts":
-                    shortcuts.append(sub_prop.text())
-                elif node.nodeName() == "recentfiles":
-                    if os.path.exists(sub_prop.text()):
-                        recentfiles.append(sub_prop.text())
-                    else:
-                        pass
-                elif node.nodeName() == "favourites":
-                    favourites.append(sub_prop.text())
-                elif node.nodeName() == "settings":
-                    settingsList.append((tuple(sub_prop.text().split('=', 1))))
-                elif node.nodeName() == "launchers":
-                    tag = sub_prop.toElement()
-                    path = tag.attribute("path")
-                    param = tag.attribute("param")
-                    launchers[path] = param
-                sub_node = sub_node.nextSibling()
-            node = node.nextSibling()
-        settingsDict = dict(settingsList)
 
-        settingsDict['LastCloseSuccessful'] = settingsDict['Closed']
+        for child in root:
+            tag = child.tag
+            if tag == "shortcuts":
+                for item in child:
+                    if item.text:
+                        shortcuts.append(item.text)
+            elif tag == "recentfiles":
+                for item in child:
+                    p = item.text or ""
+                    if os.path.exists(p):
+                        recentfiles.append(p)
+            elif tag == "favourites":
+                for item in child:
+                    if item.text:
+                        favourites.append(item.text)
+            elif tag == "settings":
+                for item in child:
+                    text = item.text or ""
+                    if "=" in text:
+                        settingsList.append(tuple(text.split("=", 1)))
+            elif tag == "launchers":
+                for item in child:
+                    path = item.get("path", "")
+                    param = item.get("param", "")
+                    if path:
+                        launchers[path] = param
+
+        settingsDict = dict(settingsList)
+        settingsDict['LastCloseSuccessful'] = settingsDict.get('Closed', 'True')
         settingsDict['Closed'] = "False"
 
         self.projectData = {}
@@ -876,69 +1171,46 @@ class EditorWindow(QtWidgets.QWidget):
         self.saveProjectData()
 
     def saveProjectData(self):
-        # FIXME QtXml is no longer supported.
-        domDocument = QtXml.QDomDocument("projectdata")
+        # QtXml migration: use ElementTree to write projectdata.xml (keep format for compatibility)
+        root = ET.Element("projectdata")
 
-        projectdata = domDocument.createElement("projectdata")
-        domDocument.appendChild(projectdata)
+        # shortcuts
+        shortcuts_elem = ET.SubElement(root, "shortcuts")
+        for i in self.projectData.get('shortcuts', []):
+            tag = ET.SubElement(shortcuts_elem, "shortcut")
+            tag.text = i
 
-        root = domDocument.createElement("shortcuts")
-        projectdata.appendChild(root)
+        # recentfiles
+        recent_elem = ET.SubElement(root, "recentfiles")
+        for i in self.projectData.get('recentfiles', []):
+            tag = ET.SubElement(recent_elem, "recent")
+            tag.text = i
 
-        for i in self.projectData['shortcuts']:
-            tag = domDocument.createElement("shortcut")
-            root.appendChild(tag)
+        # favourites
+        fav_elem = ET.SubElement(root, "favourites")
+        for i in self.projectData.get('favourites', []):
+            tag = ET.SubElement(fav_elem, "fav")
+            tag.text = i
 
-            t = domDocument.createTextNode(i)
-            tag.appendChild(t)
+        # launchers
+        launch_elem = ET.SubElement(root, "launchers")
+        for path, param in self.projectData.get('launchers', {}).items():
+            tag = ET.SubElement(launch_elem, "item")
+            tag.set("path", path)
+            tag.set("param", param)
 
-        root = domDocument.createElement("recentfiles")
-        projectdata.appendChild(root)
+        # settings
+        settings_elem = ET.SubElement(root, "settings")
+        for key, value in self.projectData.get('settings', {}).items():
+            tag = ET.SubElement(settings_elem, "key")
+            tag.text = f"{key}={value}"
 
-        for i in self.projectData['recentfiles']:
-            tag = domDocument.createElement("recent")
-            root.appendChild(tag)
-
-            t = domDocument.createTextNode(i)
-            tag.appendChild(t)
-
-        root = domDocument.createElement("favourites")
-        projectdata.appendChild(root)
-
-        for i in self.projectData['favourites']:
-            tag = domDocument.createElement("fav")
-            root.appendChild(tag)
-
-            t = domDocument.createTextNode(i)
-            tag.appendChild(t)
-
-        root = domDocument.createElement("launchers")
-        projectdata.appendChild(root)
-
-        for path, param in self.projectData['launchers'].items():
-            tag = domDocument.createElement("item")
-            tag.setAttribute("path", path)
-            tag.setAttribute("param", param)
-            root.appendChild(tag)
-
-        root = domDocument.createElement("settings")
-        projectdata.appendChild(root)
-
-        s = 0
-        for key, value in self.projectData['settings'].items():
-            tag = domDocument.createElement("key")
-            root.appendChild(tag)
-
-            t = domDocument.createTextNode(key + '=' + value)
-            tag.appendChild(t)
-            s += 1
-
-        path = os.path.join(
-            self.projectPathDict["root"], "Data", "projectdata.xml")
-        file = open(path, "w")
-        file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-        file.write(domDocument.toString())
-        file.close()
+        path = os.path.join(self.projectPathDict["root"], "Data", "projectdata.xml")
+        try:
+            tree = ET.ElementTree(root)
+            tree.write(path, encoding="UTF-8", xml_declaration=True)
+        except Exception as e:
+            print("Failed to save projectdata.xml with ET:", e)
 
     def setKeymap(self):
         shortcuts = self.useData.CUSTOM_SHORTCUTS

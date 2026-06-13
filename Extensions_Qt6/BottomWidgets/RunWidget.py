@@ -294,6 +294,7 @@ class RunWidget(BaseScintilla):
         self.bottomStackSwitcher = bottomStackSwitcher
         self.useData = useData
 
+        self._has_active_content = False
         self.profileMode = False
         self.tracebackRe = re.compile(r'(\s)*File "(.*?)", line \d.+')
 
@@ -429,7 +430,9 @@ class RunWidget(BaseScintilla):
             self.runProcess.readAllStandardError().data().decode(
                 default_encoding)
         self.printout(text, 1)
-        self.bottomStackSwitcher.setCurrentWidget(self)
+        # printout already handles the switch if needed
+        if self.bottomStackSwitcher:
+            self.bottomStackSwitcher.setCurrentWidget(self)
 
     def writeExitStatus(self, exitCode, exitStatus):
         self.writeOutput()
@@ -461,6 +464,12 @@ class RunWidget(BaseScintilla):
             self.profileMode = False
 
     def printout(self, text, styleNum):
+        # Switch to this (Output/Kimenet) panel when active content first appears.
+        # By default we show AIPanel; only switch here when there's output.
+        if not self._has_active_content and text.strip():
+            self._has_active_content = True
+            if self.bottomStackSwitcher:
+                self.bottomStackSwitcher.setCurrentWidget(self)
         start = self.length()
         self.SendScintilla(QsciScintillaBase.SCI_STARTSTYLING, start)
         self.append(text)

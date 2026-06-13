@@ -1,11 +1,23 @@
 import os
 import shutil
-# FIXME QtXml is no longer supported.
-from PyQt6 import QtCore, QtGui, QtPrintSupport, QtWidgets, QtXml
+import json
+import xml.etree.ElementTree as ET  # stdlib, for reading legacy XML snippets (QXml migration)
+
+from PyQt6 import QtCore, QtGui, QtPrintSupport, QtWidgets
 
 from Extensions_Qt6.Library.LibraryAddDialog import LibraryAddDialog
 from Extensions_Qt6.Library.AdvancedSearch import AdvancedSearch
 from Extensions_Qt6.BaseScintilla import BaseScintilla
+
+# QXml / QDom migration note (2026):
+# Previously all snippets were stored as individual XML files using QtXml.QDomDocument
+# (legacy, and QtXml is optional/not recommended in PyQt6 strict setups).
+# New strategy (as per project plan):
+# - Read: support both legacy XML and new JSON transparently.
+# - Write: always use JSON (simple, no Qt dep, easy to version, human readable).
+# - On edit/add, old .xml files get overwritten as .json (same filename, no extension change needed).
+# - AdvancedSearch and all loaders updated to use the new helpers.
+# This removes the "QXml problem" from the Library (Könyvtár) view while keeping full backward compat for existing libraries.
 
 
 def sizeformat(size):
@@ -18,6 +30,70 @@ def sizeformat(size):
         return str(round(size / 1048576, 2)) + "MB"
     else:
         return str(round(size / 1073741824, 2)) + "GB"
+
+
+# --- Snippet storage helpers (post QXml migration) ---
+def _load_snippet_data(path):
+    """Load a library snippet.
+    Supports legacy XML (for backward compat) and new JSON format.
+    Returns dict with keys: 'comments', 'source', 'code'.
+    """
+    if not os.path.exists(path):
+        return {'comments': '', 'source': '', 'code': ''}
+
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            content = f.read().strip()
+    except Exception:
+        return {'comments': '', 'source': '', 'code': ''}
+
+    if not content:
+        return {'comments': '', 'source': '', 'code': ''}
+
+    # Legacy XML format detection
+    if content.startswith('<'):
+        try:
+            root = ET.fromstring(content)
+            data = {'comments': '', 'source': '', 'code': ''}
+            for child in root:
+                if child.tag == 'comments':
+                    data['comments'] = child.text or ''
+                elif child.tag == 'source':
+                    data['source'] = child.text or ''
+                elif child.tag == 'code':
+                    data['code'] = child.text or ''
+            return data
+        except Exception:
+            return {'comments': '', 'source': '', 'code': ''}
+
+    # New JSON format (preferred)
+    try:
+        data = json.loads(content)
+        return {
+            'comments': data.get('comments', ''),
+            'source': data.get('source', ''),
+            'code': data.get('code', '')
+        }
+    except Exception:
+        return {'comments': '', 'source': '', 'code': ''}
+
+
+def _save_snippet_data(path, comments, source, code):
+    """Save a snippet using the new JSON format.
+    This replaces all previous QDomDocument writes.
+    """
+    data = {
+        'comments': comments or '',
+        'source': source or '',
+        'code': code or ''
+    }
+    try:
+        with open(path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        print(f"[Library] Failed to save snippet JSON: {e}")
+        return False
 
 
 class EditComment(QtWidgets.QDialog):
@@ -403,41 +479,14 @@ class Library(QtWidgets.QMainWindow):
             path = os.path.join(self.useData.appPathDict[
                                 "librarydir"], snippetName)
 
-            # FIXME QtXml is no longer supported.
-            dom_document = QtXml.QDomDocument()
-            file = open(path, "r")
-            dom_document.setContent(file.read())
-            file.close()
-
-            # save changes
-            # FIXME QtXml is no longer supported.
-            dom_document = QtXml.QDomDocument("snippet")
-            root = dom_document.createElement("snippet")
-            dom_document.appendChild(root)
-
-            tag = dom_document.createElement('comments')
-            root.appendChild(tag)
-
-            t = dom_document.createCDATASection(comment)
-            tag.appendChild(t)
-
-            tag = dom_document.createElement('source')
-            root.appendChild(tag)
-
-            t = dom_document.createCDATASection(source)
-            tag.appendChild(t)
-
-            tag = dom_document.createElement('code')
-            root.appendChild(tag)
-
-            t = dom_document.createCDATASection(self.codeViewer.text())
-            tag.appendChild(t)
-
-            file = open(path, "w")
-            file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-            file.write(dom_document.toString())
-            file.close()
-            self.viewLibraryItem(self.currentSnippetItem)
+            # New JSON save (QXml migration). Old XML files are read via _load_snippet_data
+            # but always written as JSON from now on. This removes the QtXml dependency.
+            success = _save_snippet_data(path, comment, source, self.codeViewer.text())
+            if success:
+                self.viewLibraryItem(self.currentSnippetItem)
+            else:
+                QtWidgets.QMessageBox.warning(self, _("Library"),
+                                            _("Failed to save comment changes."))
 
     def showComments(self):
         if self.commentViewer.isVisible():
@@ -496,6 +545,7 @@ class Library(QtWidgets.QMainWindow):
                     self.useData.appPathDict["librarydir"], i))
                 item.setText(1, sizeformat(itemSize))
                 item.setToolTip(1, "")
+
                 parent.addChild(item)
         self.snippetsListWidget.expandAll()
         self.snippetsListWidget.resizeColumnToContents(1)
@@ -530,27 +580,12 @@ class Library(QtWidgets.QMainWindow):
         self.currentSnippetNameLabel.setText(item.text())
 
     def showExtraData(self, path):
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument()
-        file = open(path, "r")
-        dom_document.setContent(file.read())
-        file.close()
-
-        documentElement = dom_document.documentElement()
-        childElement = documentElement.firstChild().toElement()
-        source = ''  # for compatibilty with older versions of library files
-        while childElement.isNull() is False:
-            if childElement.nodeName() == 'comments':
-                comments = childElement.firstChild().nodeValue()
-            elif childElement.nodeName() == 'code':
-                code = childElement.firstChild().nodeValue()
-            elif childElement.nodeName() == 'source':
-                source = childElement.firstChild().nodeValue()
-            childElement = childElement.nextSibling()
-
-        self.commentViewer.setPlainText(comments)
-        self.codeViewer.setText(code)
-        self.sourceLine.setText(source)
+        # Uses the new loader that supports both legacy XML and current JSON.
+        # No more QDomDocument.
+        data = _load_snippet_data(path)
+        self.commentViewer.setPlainText(data.get('comments', ''))
+        self.codeViewer.setText(data.get('code', ''))
+        self.sourceLine.setText(data.get('source', ''))  # may be empty for old entries
 
     def removeItem(self):
         mess = 'Remove "{0}" from library?'.format(
@@ -644,46 +679,22 @@ class Library(QtWidgets.QMainWindow):
                 else:
                     return
             try:
-                # FIXME QtXml is no longer supported.
-                dom_document = QtXml.QDomDocument("snippet")
-                root = dom_document.createElement("snippet")
-                dom_document.appendChild(root)
-
-                tag = dom_document.createElement('comments')
-                root.appendChild(tag)
-
-                t = dom_document.createCDATASection(
-                    add.commentEntry.toPlainText())
-                tag.appendChild(t)
-
-                tag = dom_document.createElement('source')
-                root.appendChild(tag)
-
+                # QXml removed. We now save as clean JSON using the helper.
+                # This is the new canonical format for Library snippets.
+                comments = add.commentEntry.toPlainText()
                 if add.entireModuleButton.isChecked():
-                    t = dom_document.createCDATASection("Main")
-                    tag.appendChild(t)
+                    src = "Main"
+                    code = editorTabWidget.getSource()
                 else:
-                    t = dom_document.createCDATASection(
-                        editorTabWidget.getTabName())
-                    tag.appendChild(t)
+                    src = editorTabWidget.getTabName()
+                    code = editorTabWidget.focusedEditor().selectedText()
 
-                tag = dom_document.createElement('code')
-                root.appendChild(tag)
-
-                if add.entireModuleButton.isChecked():
-                    t = dom_document.createCDATASection(
-                        editorTabWidget.getSource())
+                success = _save_snippet_data(path, comments, src, code)
+                if success:
+                    self.loadLibrary()
+                    self.close()
                 else:
-                    t = dom_document.createCDATASection(
-                        editorTabWidget.focusedEditor().selectedText())
-                tag.appendChild(t)
-
-                file = open(path, "w")
-                file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-                file.write(dom_document.toString())
-                file.close()
-                self.loadLibrary()
-                self.close()
+                    raise Exception("JSON save failed")
             except Exception as err:
                 message = QtWidgets.QMessageBox.warning(self, _("Library Add"),
                                                     _("Adding to Library failed!\n\n{0}").format(str(err)))

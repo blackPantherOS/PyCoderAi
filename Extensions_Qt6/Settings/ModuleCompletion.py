@@ -1,4 +1,4 @@
-from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
+from PyQt6 import QtCore, QtGui, QtWidgets  # QtXml import removed (was unused)
 
 class ModuleCompletion(QtWidgets.QTreeWidget):
     def __init__(self, useData, parent=None):

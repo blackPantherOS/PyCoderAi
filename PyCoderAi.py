@@ -6,9 +6,9 @@
 #*  |_____||__||___._||____||__|__||___|   |___._||__|__||____|__|__||_____||__|      |_______|_______|  *
 #* http://www.blackpantheros.eu | http://www.blackpanther.hu - kbarcza[]blackpanther.hu * Charles Barcza *
 #*************************************************************************************(c)2002-2020********
-# Project         : PyCoder
+# Project         : PyCoderAi
 # Module          : Development IDE
-# File            : PyCoder6.py
+# File            : PyCoderAi.py
 # Version         : 0.9.4
 # Authors         : Charles K. Barcza & Miklos Horvath - info@blackpanther.hu
 # Created On      : Fri Jan 17 2020
@@ -36,6 +36,7 @@ from Extensions_Qt6 import StyleSheet
 from Extensions_Qt6.Start import Start
 from Extensions_Qt6.StackSwitcher import StackSwitcher
 from Extensions_Qt6.AIPanel import AIPanel
+from Extensions_Qt6.OllamaManager import OllamaManager
 
 import gettext
 locale.setlocale(locale.LC_ALL, '')
@@ -63,7 +64,7 @@ except:
 
 print(_('Welcome to PyCoderAi! The used language for interface is: ') + language)
 
-class PyCoder(QtWidgets.QMainWindow):
+class PyCoderAi(QtWidgets.QMainWindow):
     """
     Main application window.
     Converted to QMainWindow to support real QDockWidget-based
@@ -74,7 +75,7 @@ class PyCoder(QtWidgets.QMainWindow):
         super().__init__(parent)
 
         self.setWindowIcon(QtGui.QIcon(resource_path(os.path.join("Resources", "images", "icon.png"))))
-        self.setWindowTitle(_("PyCoder - Loading..."))
+        self.setWindowTitle(_("PyCoderAi - Loading..."))
 
         screen = QtWidgets.QApplication.primaryScreen().geometry()
         self.resize(screen.width() - 200, screen.height() - 200)
@@ -163,9 +164,28 @@ class PyCoder(QtWidgets.QMainWindow):
         hbox.setSpacing(5)
 
         # AI Panel in the main outer view (toggleable, as in the original design)
+        # IMPORTANT: NOT a QDockWidget. It lives in the central layout and is toggled
+        # with Ctrl+Alt+A. The custom "Menü" button popup is used instead of a native menuBar.
+        # Wrapped in a QTabWidget alongside the Ollama Manager.
+        self.aiTabWidget = QtWidgets.QTabWidget()
+        # Style the tab bar so tabs are clearly visible in dark themes
+        self.aiTabWidget.setStyleSheet("""
+            QTabWidget::pane { border: 1px solid #444; background: #1e1e1e; }
+            QTabBar::tab { background: #333; color: #ccc; padding: 6px 14px; border: 1px solid #444; border-bottom: none; min-width: 80px; }
+            QTabBar::tab:selected { background: #555; color: #fff; font-weight: bold; }
+            QTabBar::tab:hover { background: #444; }
+        """)
         self.aiPanel = AIPanel(self)
-        mainLayout.addWidget(self.aiPanel)
-        self.aiPanel.setVisible(False)  # hidden by default, Ctrl+Alt+A to toggle
+        self.aiTabWidget.addTab(self.aiPanel, _("AI Chat"))
+        try:
+            self.ollamaManager = OllamaManager(self)
+            self.aiTabWidget.addTab(self.ollamaManager, _("Ollama"))
+        except Exception as e:
+            print(f"[WARNING] Failed to create OllamaManager: {e}")
+            import traceback
+            traceback.print_exc()
+        mainLayout.addWidget(self.aiTabWidget)
+        self.aiTabWidget.setVisible(False)  # hidden by default, Ctrl+Alt+A to toggle
 
         self.settingsButton = QtWidgets.QToolButton()
         self.settingsButton.setAutoRaise(True)
@@ -200,12 +220,17 @@ class PyCoder(QtWidgets.QMainWindow):
         # Configure AI Panel with settings
         self.aiPanel.configure_ai_assistant(self.useData.settings)
 
+        # Reconfigure when settings dialog closes (user may change AI provider, key, etc.)
+        self.settingsWidget.finished.connect(
+            lambda _code: self.aiPanel.configure_ai_assistant(self.useData.settings)
+        )
+
         self.useData.saveSettings()
 
     def createActions(self):
         self.aboutAct = QtGui.QAction(
             QtGui.QIcon(resource_path(os.path.join("Resources", "images", "properties"))),
-            _("About PyCoder"), self, statusTip=_("More info of PyCoderAi "),
+            _("About PyCoderAi"), self, statusTip=_("More info of PyCoderAi "),
             triggered=self.showAbout)
 
         self.showFullScreenAct = \
@@ -219,16 +244,18 @@ class PyCoder(QtWidgets.QMainWindow):
         self.settingsAct = QtGui.QAction(
             QtGui.QIcon(resource_path(os.path.join("Resources", "images", "config"))),
             _("Settings"), self,
-            statusTip=_("PyCoder Settings"), triggered=self.showSettings)
+            statusTip=_("PyCoderAi Settings"), triggered=self.showSettings)
 
         self.createMenus()
 
     def createMenus(self):
-        """Basic menu bar. Dock-specific View menu removed for now
-        (to avoid duplicate panels and restore original Library button behavior).
-        We will add global View controls later if needed."""
-        menuBar = self.menuBar()
-        # No extra View menu with dock toggles for the moment.
+        """Basic menu bar. No native menuBar is used (the UI relies on the custom
+        "Menü" button that pops up a QMenu). Dock toggle menus are not added here.
+        Per the design, there is a "Menü" button with submenus instead of a top menu bar.
+        """
+        # We intentionally do not call self.menuBar() or add top-level menus like "View"/"Megjelenés"
+        # because the application uses a custom popup menu from a button.
+        pass  # createActions already created the actions used in the popup menus elsewhere if needed.
 
     def addPage(self, pageWidget, name, iconPath):
         self.projectSwitcher.addButton(name=name, icon=iconPath)
@@ -276,12 +303,12 @@ class PyCoder(QtWidgets.QMainWindow):
         window = data[0]
         windowType = data[1]
         if windowType == "Start":
-            self.setWindowTitle(_("PyCoder - Start"))
+            self.setWindowTitle(_("PyCoderAi - Start"))
         elif windowType == "Project":
             title = window.editorTabWidget.getEditorData("filePath")
             self.updateWindowTitle(title)
             # Update AI Panel with current editor (prefer real editor widget over tab page)
-            if self.aiPanel.isVisible():
+            if self.aiTabWidget.isVisible():
                 etw = getattr(window, 'editorTabWidget', None)
                 current_editor = None
                 if etw:
@@ -302,16 +329,16 @@ class PyCoder(QtWidgets.QMainWindow):
 
     def updateWindowTitle(self, title):
         if title is None:
-            title = _("PyCoder - ") + _("Unsaved")
+            title = _("PyCoderAi - ") + _("Unsaved")
         else:
             window = self.projectTitleBox.itemData(
                 self.projectTitleBox.currentIndex())[0]
             if title.startswith(window.projectPathDict["sourcedir"]):
                 src_dir = window.projectPathDict["sourcedir"]
                 n = title.partition(src_dir)[-1]
-                title = 'PyCoder - ' + n
+                title = 'PyCoderAi - ' + n
             else:
-                title = "PyCoder - " + title
+                title = "PyCoderAi - " + title
         self.setWindowTitle(title)
 
     def showAbout(self):
@@ -421,13 +448,15 @@ class PyCoder(QtWidgets.QMainWindow):
         self.shortAIPanel.activated.connect(self.toggleAIPanel)
 
     def toggleAIPanel(self):
-        """Toggle AI Panel visibility (the one in the main outer view)"""
-        current_visibility = self.aiPanel.isVisible()
-        self.aiPanel.setVisible(not current_visibility)
+        """Toggle AI Panel visibility (the one in the main outer view).
+        Uses Ctrl+Alt+A. The panel lives in the central layout (not as a dock).
+        The app uses a custom "Menü" button popup, not a native menu bar.
+        """
+        current_visibility = self.aiTabWidget.isVisible()
+        self.aiTabWidget.setVisible(not current_visibility)
 
-        # If we're showing the panel, try to set the current editor (prefer real editor)
+        # If we just showed it, feed the current editor for context
         if not current_visibility:
-            # Get the current project window
             current_index = self.projectWindowStack.currentIndex()
             if current_index >= 0:
                 current_window = self.projectWindowStack.currentWidget()
@@ -445,6 +474,6 @@ splash = QtWidgets.QSplashScreen(
     QtGui.QPixmap(resource_path(os.path.join("Resources", "images", "splash.png"))))
 splash.show()
 
-main = PyCoder()
+main = PyCoderAi()
 splash.finish(main)
 sys.exit(app.exec())

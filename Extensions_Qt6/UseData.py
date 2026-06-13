@@ -1,11 +1,21 @@
 import os
 import sys
+import subprocess  # used optionally for desktop theme detection (gsettings)
 import re
 import codecs
 import traceback
 import logging
-from PyQt6 import QtCore, QtXml, QtWidgets
+import json
+import xml.etree.ElementTree as ET  # stdlib for legacy QtXml migration
+
+from PyQt6 import QtCore, QtWidgets
 from PyQt6.Qsci import QsciScintilla
+
+# QtXml full cleanup (2026):
+# Core persistence (usedata.xml, modules.xml, keymap.xml) migrated to JSON primary format.
+# Legacy XML support via stdlib ET for old workspaces.
+# QtXml import removed.
+# Color schemes and some project files still use it (see separate audit).
 
 from Extensions_Qt6.Workspace import WorkSpace
 
@@ -404,156 +414,202 @@ class UseData(QtCore.QObject):
             "keymap": os.path.join(self.workspaceDir, "Settings", "keymap.xml")
             }
 
-    def loadUseData(self):
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument()
+    def _load_config_file(self, path):
+        """Load config file supporting both legacy XML (QDom style) and new JSON.
+        Returns the root data structure or None on failure.
+        Used for usedata, modules, etc. during QtXml cleanup.
+        Robust to template artifacts (e.g. trailing tags).
+        """
+        if not os.path.exists(path):
+            return None
         try:
-            file = open(self.appPathDict["usedata"], "r")
-            dom_document.setContent(file.read())
-            file.close()
-        except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            logging.error(repr(traceback.format_exception(exc_type, exc_value,
-                         exc_traceback)))
+            with open(path, 'r', encoding='utf-8') as f:
+                content = f.read().strip()
+            if not content:
+                return None
+            if content.startswith('<'):
+                # Legacy XML - be robust to multiple roots or trailing junk in old templates
+                try:
+                    root = ET.fromstring(content)
+                    return root
+                except ET.ParseError:
+                    # Try to extract the first <usedata>...</usedata> block
+                    import re
+                    match = re.search(r'<usedata>.*?</usedata>', content, re.DOTALL | re.IGNORECASE)
+                    if match:
+                        root = ET.fromstring(match.group(0))
+                        return root
+                    return None
+            else:
+                # New JSON
+                return json.loads(content)
+        except Exception as e:
+            logging.error(f"Failed to load config {path}: {e}")
+            return None
+
+    def loadUseData(self):
+        # Always ensure core defaults at the very beginning (even if usedata is missing,
+        # corrupted, or parse fails in fresh/first-run workspaces). This prevents
+        # KeyError for any expected key seen on startup with new settings.
+        # These come from the original template + code usage.
+        DEFAULT_SETTINGS = {
+            "AutoCompletion": "Api",
+            "ShowWhiteSpaces": "False",
+            "EnableAutoCompletion": "True",
+            "EnableAssistance": "True",
+            "ShowCaretLine": "True",
+            "EditorStyleName": "Default",
+            "ShowLineNumbers": "True",
+            "EdgeColumn": "78",
+            "CaretLineColor": "#D4FFD4",
+            "EditorStyleCss": "Dark",
+            "DynamicSearch": "True",
+            "UI": "Custom",
+            "Running": "False",
+            "SelectionColor": "#aaddff",
+            "ShowEdgeLine": "False",
+            "EnableFolding": "False",
+            "MarkSearchOccurrence": "True",
+            "DocOnHover": "False",
+            "MiniMap": "False",
+            "SoundsEnabled": "False",
+            "EditorStyleHtml": "Default",
+            "MarkOperationalLines": "False",
+            "EnableAlerts": "True",
+            "EdgeMode": "Line",
+            "MatchBraces": "False",
+            "Autosave": "False",
+            "EditorStyleXml": "KewlDark",
+            "enableStyleGuide": "False",
+            "EditorStylePython": "Designer",
+            "CallTips": "False",
+            "FirstRun": "False",
+            "LastOpenedPath": os.path.expanduser("~"),
+            "InstalledInterpreters": "",
+        }
+        for k, v in DEFAULT_SETTINGS.items():
+            self.SETTINGS.setdefault(k, v)
+
+        # QtXml cleanup: support legacy XML via ET, prefer JSON.
+        data = self._load_config_file(self.appPathDict["usedata"])
+        if data is None:
+            # Still proceed with defaults; UI etc. will be set
+            self.loadKeymap()
+            self.loadModulesForCompletion()
             return
 
-        elements = dom_document.documentElement()
-        node = elements.firstChild()
-
         settingsList = []
-        while node.isNull() is False:
-            property = node.toElement()
-            sub_node = property.firstChild()
-            while sub_node.isNull() is False:
-                sub_prop = sub_node.toElement()
-                if node.nodeName() == "openedprojects":
-                    path = sub_prop.text()
-                    if os.path.exists(path):
-                        self.OPENED_PROJECTS.append(path)
-                elif node.nodeName() == "settings":
-                    settingsList.append((tuple(sub_prop.text().split('=', 1))))
-                sub_node = sub_node.nextSibling()
-            node = node.nextSibling()
+        if isinstance(data, dict):
+            # JSON format
+            if "openedprojects" in data:
+                for p in data.get("openedprojects", []):
+                    if os.path.exists(p):
+                        self.OPENED_PROJECTS.append(p)
+            settings = data.get("settings", {})
+            for k, v in settings.items():
+                settingsList.append((k, v))
+        else:
+            # Legacy XML (ET Element)
+            root = data
+            for child in root:
+                if child.tag == "openedprojects":
+                    for proj in child:
+                        path = proj.text or ""
+                        if os.path.exists(path):
+                            self.OPENED_PROJECTS.append(path)
+                elif child.tag == "settings":
+                    for key_elem in child:
+                        text = key_elem.text or ""
+                        if '=' in text:
+                            settingsList.append(tuple(text.split('=', 1)))
 
         self.SETTINGS.update(dict(settingsList))
-        # for compatibility with older versions of PyCoder
-        settingsKeys = self.SETTINGS.keys()
-        if "MarkOperationalLines" not in settingsKeys:
-            self.SETTINGS["MarkOperationalLines"] = "False"
 
-        if "UI" not in settingsKeys:
-            self.SETTINGS["UI"] = "Custom"
+        # Re-apply theme adoption after loading file values (in case file had old light defaults)
+        if self.settings.get("firstRun", "False") == "True" or \
+           self.SETTINGS.get("EditorStylePython", "Designer") in ("Designer", "Default", "KewlDark"):
+            try:
+                sys_theme = self._detect_system_color_scheme()
+                if sys_theme == "dark":
+                    if os.path.exists(os.path.join(self.appPathDict["stylesdir"], "Python", "blackPantherDark.xml")):
+                        self.SETTINGS["EditorStylePython"] = "blackPantherDark"
+                    else:
+                        self.SETTINGS["EditorStylePython"] = "KewlDark"
+                    self.SETTINGS["EditorStyleCss"] = self.SETTINGS.get("EditorStyleCss", "Dark")
+                else:
+                    self.SETTINGS["EditorStylePython"] = "Designer"
+            except Exception:
+                pass
 
         self.loadKeymap()
         self.loadModulesForCompletion()
 
     def saveModulesForCompletion(self):
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument("modules")
-
-        modules = dom_document.createElement("modules")
-        dom_document.appendChild(modules)
-
-        for i, v in self.libraryDict.items():
-            tag = dom_document.createElement(i)
-            modules.appendChild(tag)
-            tag.setAttribute("use", str(v[1]))
-
-            for subModule in v[0]:
-                item = dom_document.createElement("item")
-                tag.appendChild(item)
-
-                t = dom_document.createTextNode(subModule)
-                item.appendChild(t)
+        # QtXml cleanup: save as JSON (primary format now).
+        # Structure: { "moduleName": { "use": "...", "items": [ ... ] }, ... }
+        data = {}
+        for module_name, (item_list, use) in self.libraryDict.items():
+            data[module_name] = {
+                "use": str(use),
+                "items": item_list
+            }
 
         try:
-            file = open(self.appPathDict["modules"], "w")
-            file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-            file.write(dom_document.toString())
-            xml_content = dom_document.toString()
-            #print("DOM document content:")
-            #print(xml_content)
-            file.close()
-            print("File saved:", self.appPathDict["modules"])
-
-        except:
+            with open(self.appPathDict["modules"], "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            print("File saved (JSON):", self.appPathDict["modules"])
+        except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             logging.error(repr(traceback.format_exception(exc_type, exc_value,
                          exc_traceback)))
 
     def loadModulesForCompletion(self):
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument()
-        try:
-            file = open(self.appPathDict["modules"], "r")
-            dom_document.setContent(file.read())
-            file.close()
-        except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            logging.error(repr(traceback.format_exception(exc_type, exc_value,
-                         exc_traceback)))
+        # QtXml cleanup: support legacy XML (ET) and new JSON.
+        data = self._load_config_file(self.appPathDict["modules"])
+        if data is None:
+            self.libraryDict = {}
             return
 
-        element = dom_document.documentElement()
-        node = element.firstChild()
-
         self.libraryDict = {}
-        while node.isNull() is False:
-            property = node.toElement()
-            sub_node = property.firstChild()
-
-            moduleName = node.nodeName()
-            use = property.attribute('use')
-
-            itemList = []
-            while sub_node.isNull() is False:
-                sub_prop = sub_node.toElement()
-                itemList.append(sub_prop.text())
-
-                sub_node = sub_node.nextSibling()
-            self.libraryDict[moduleName] = [itemList, use]
-            node = node.nextSibling()
+        if isinstance(data, dict):
+            # JSON format
+            for module_name, info in data.items():
+                item_list = info.get("items", []) if isinstance(info, dict) else []
+                use = info.get("use", "0") if isinstance(info, dict) else "0"
+                self.libraryDict[module_name] = [item_list, use]
+        else:
+            # Legacy XML (ET root)
+            root = data
+            for module_elem in root:
+                module_name = module_elem.tag
+                use = module_elem.get("use", "0")
+                item_list = []
+                for item_elem in module_elem:
+                    if item_elem.text:
+                        item_list.append(item_elem.text)
+                self.libraryDict[module_name] = [item_list, use]
 
     def saveUseData(self):
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument("usedata")
+        # QtXml cleanup: save as JSON primary format.
+        # Structure:
+        # {
+        #   "openedprojects": [ ... ],
+        #   "settings": { "key": "value", ... }
+        # }
+        data = {
+            "openedprojects": self.OPENED_PROJECTS,
+            "settings": {}
+        }
 
-        usedata = dom_document.createElement("usedata")
-        dom_document.appendChild(usedata)
-
-        root = dom_document.createElement("openedprojects")
-        usedata.appendChild(root)
-
-        for i in self.OPENED_PROJECTS:
-            tag = dom_document.createElement("project")
-            root.appendChild(tag)
-
-            t = dom_document.createTextNode(i)
-            tag.appendChild(t)
-
-        root = dom_document.createElement("settings")
-        usedata.appendChild(root)
-
-        s = 0
         for key, value in self.SETTINGS.items():
             if key == "InstalledInterpreters":
                 continue
-            tag = dom_document.createElement("key")
-            root.appendChild(tag)
+            data["settings"][key] = value
 
-            t = dom_document.createTextNode(key + '=' + value)
-            tag.appendChild(t)
-            s += 1
-
-        usedata = dom_document.createElement("usedata")
-        dom_document.appendChild(usedata)
-
-        try:    
-            file = open(self.appPathDict["usedata"], "w")
-            file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-            file.write(dom_document.toString())
-            file.close()
-        except:
+        try:
+            with open(self.appPathDict["usedata"], "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+        except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             logging.error(repr(traceback.format_exception(exc_type, exc_value,
                          exc_traceback)))
@@ -563,44 +619,102 @@ class UseData(QtCore.QObject):
         self.saveSettings()
         self.saveModulesForCompletion()
 
+    def _detect_system_color_scheme(self):
+        """Try to detect if the desktop environment is using dark or light theme.
+        Returns 'dark' or 'light'. Falls back to 'light'.
+        This allows the app to adopt the environment's theme/color settings on first run
+        or when no explicit choice was made.
+        """
+        try:
+            # Modern Qt way (Qt 6.5+)
+            from PyQt6.QtCore import Qt
+            from PyQt6 import QtWidgets
+            hints = QtWidgets.QApplication.styleHints()
+            if hasattr(hints, 'colorScheme'):
+                scheme = hints.colorScheme()
+                if scheme == Qt.ColorScheme.Dark:
+                    return "dark"
+                if scheme == Qt.ColorScheme.Light:
+                    return "light"
+        except Exception:
+            pass
+
+        # Linux fallbacks
+        if sys.platform.startswith("linux"):
+            try:
+                import subprocess
+                # GNOME / GTK
+                for key in ["color-scheme", "gtk-theme"]:
+                    try:
+                        res = subprocess.run(
+                            ["gsettings", "get", "org.gnome.desktop.interface", key],
+                            capture_output=True, text=True, timeout=0.8
+                        )
+                        out = (res.stdout or "").lower()
+                        if "dark" in out:
+                            return "dark"
+                    except Exception:
+                        pass
+                # KDE
+                kde = os.path.expanduser("~/.config/kdeglobals")
+                if os.path.exists(kde):
+                    with open(kde, "r", errors="ignore") as f:
+                        content = f.read().lower()
+                        if "[colors]" in content or "dark" in content[:2000]:
+                            return "dark"
+            except Exception:
+                pass
+
+        # Rough palette check (last resort)
+        try:
+            from PyQt6 import QtWidgets
+            pal = QtWidgets.QApplication.palette()
+            bg = pal.window().color()
+            if bg.lightness() < 100:  # quite dark
+                return "dark"
+        except Exception:
+            pass
+
+        return "light"
+
     def loadKeymap(self):
         if self.settings["firstRun"] == "True":
             self.CUSTOM_SHORTCUTS = self.DEFAULT_SHORTCUTS
             return
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument()
-        try:
-            file = open(self.appPathDict["keymap"], "r")
-            x = dom_document.setContent(file.read())
-            file.close()
-        except:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            logging.error(repr(traceback.format_exception(exc_type, exc_value,
-                         exc_traceback)))
+
+        # QtXml cleanup: support legacy XML and new JSON for keymap.
+        data = self._load_config_file(self.appPathDict["keymap"])
+        if data is None:
             return
 
-        elements = dom_document.documentElement()
-        node = elements.firstChild()
-        while node.isNull() is False:
-            property = node.toElement()
-            sub_node = property.firstChild()
-            group = node.nodeName()
-            while sub_node.isNull() is False:
-                sub_prop = sub_node.toElement()
-                tag = sub_prop.toElement()
-                name = tag.tagName()
-                shortcut = tag.attribute("shortcut")
-                if group == "Editor":
-                    keyValue = int(tag.attribute("value"))
-                    self.CUSTOM_SHORTCUTS[
-                        group][name] = [shortcut, keyValue]
-                else:
-                    self.CUSTOM_SHORTCUTS[
-                        group][name] = shortcut
-
-                sub_node = sub_node.nextSibling()
-
-            node = node.nextSibling()
+        if isinstance(data, dict):
+            # JSON format: { "Editor": { "name": ["shortcut", value], ... }, "Ide": { "name": "shortcut", ... } }
+            for group, items in data.items():
+                if group not in self.CUSTOM_SHORTCUTS:
+                    continue
+                for name, val in items.items():
+                    if group == "Editor" and isinstance(val, list) and len(val) == 2:
+                        self.CUSTOM_SHORTCUTS[group][name] = val
+                    else:
+                        self.CUSTOM_SHORTCUTS[group][name] = val
+        else:
+            # Legacy XML (ET)
+            root = data
+            for group_elem in root:
+                group = group_elem.tag
+                if group not in self.CUSTOM_SHORTCUTS:
+                    continue
+                for item in group_elem:
+                    name = item.tag
+                    shortcut = item.get("shortcut", "")
+                    if group == "Editor":
+                        try:
+                            key_value = int(item.get("value", "0"))
+                            self.CUSTOM_SHORTCUTS[group][name] = [shortcut, key_value]
+                        except:
+                            self.CUSTOM_SHORTCUTS[group][name] = shortcut
+                    else:
+                        self.CUSTOM_SHORTCUTS[group][name] = shortcut
 
     def getLastOpenedDir(self):
         if os.path.exists(self.SETTINGS["LastOpenedPath"]):

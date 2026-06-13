@@ -1,5 +1,8 @@
-# FIXME QtXml is no longer supported.
-from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
+import json
+# QtXml removed - using JSON for keymap storage (with legacy XML reader if needed).
+# See UseData._load_config_file pattern for similar migration.
+
+from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.Qsci import QsciScintilla
 
 
@@ -167,32 +170,24 @@ class Keymap(QtWidgets.QDialog):
         self.saveKeymap()
 
     def saveKeymap(self, path=None):
-        dom_document = QtXml.QDomDocument("keymap")
-
-        keymap = dom_document.createElement("keymap")
-        dom_document.appendChild(keymap)
-
-        for key, value in self.useData.CUSTOM_SHORTCUTS.items():
-            root = dom_document.createElement(key)
-            keymap.appendChild(root)
-
-            for short, func in value.items():
-                tag = dom_document.createElement(short)
-                if key == "Editor":
-                    shortName = func[0]
-                    keyValue = str(func[1])
-                    tag.setAttribute("shortcut", shortName)
-                    tag.setAttribute("value", keyValue)
+        # JSON primary format after QtXml cleanup.
+        # Structure mirrors the old XML: { "Editor": { "name": ["shortcut", value], ... }, "Ide": { "name": "shortcut", ... } }
+        data = {}
+        for group, items in self.useData.CUSTOM_SHORTCUTS.items():
+            data[group] = {}
+            for name, func in items.items():
+                if group == "Editor":
+                    data[group][name] = [func[0], func[1]]
                 else:
-                    tag.setAttribute("shortcut", func)
-                root.appendChild(tag)
+                    data[group][name] = func
 
         if path is None:
             path = self.useData.appPathDict["keymap"]
-        file = open(path, "w")
-        file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-        file.write(dom_document.toString())
-        file.close()
+        try:
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            print(f"Failed to save keymap: {e}")
 
     def bindKeymap(self):
         for i in range(self.projectWindowStack.count() - 1):

@@ -1,8 +1,9 @@
 import os
 import ctypes
 import shutil
-# FIXME QtXml is no longer supported.
-from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
+import xml.etree.ElementTree as ET  # QtXml migration (full cleanup)
+
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from Extensions_Qt6 import Global
 from Extensions_Qt6.Projects.ProjectManager.ProjectView.ProgressWidget import ProgressWidget
@@ -595,46 +596,43 @@ class ProjectTree(QtWidgets.QTreeView):
                 subprocess.run(['xdg-open', path])
                 
     def setMainScript(self):
+        # QtXml migration: use ElementTree (replaces QDomDocument usage)
         fileName = self.getCurrentFilePath()
         self.projectPathDict["mainscript"] = fileName
 
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument()
-        file = open(self.projectPathDict["projectmainfile"], "r")
-        x = dom_document.setContent(file.read())
-        file.close()
+        project_file = self.projectPathDict["projectmainfile"]
+        settingsDict = {"Version": "0.1", "Type": "Desktop Application", "Name": "", "MainScript": fileName}
 
-        elements = dom_document.documentElement()
-        node = elements.firstChild()
-
-        settingsDict = {}
-        while node.isNull() is False:
-            tag = node.toElement()
-
-            settingsDict["Type"] = tag.attribute("Type")
-            settingsDict["Name"] = tag.attribute("Name")
-            settingsDict["MainScript"] = tag.attribute("MainScript")
-            settingsDict["Version"] = tag.attribute("Version")
-
-            node = node.nextSibling()
+        if os.path.exists(project_file):
+            try:
+                tree = ET.parse(project_file)
+                root = tree.getroot()
+                # Find the pycoder_project element (supports both direct root and <properties> wrapper)
+                proj = root.find("pycoder_project")
+                if proj is None and root.tag == "pycoder_project":
+                    proj = root
+                if proj is not None:
+                    for attr in ("Version", "Type", "Name", "MainScript"):
+                        val = proj.get(attr, "")
+                        if val:
+                            settingsDict[attr] = val
+            except Exception as e:
+                print("setMainScript: failed to parse existing project.xml with ET:", e)
 
         settingsDict["MainScript"] = fileName
 
-        # save data
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument("Project")
-        properties = dom_document.createElement("properties")
-        dom_document.appendChild(properties)
-
-        tag = dom_document.createElement("pycoder_project")
+        # Rewrite using same structure as repair/create ( <properties><pycoder_project attrs.../> )
+        root = ET.Element("properties")
+        tag = ET.SubElement(root, "pycoder_project")
         for key, value in settingsDict.items():
-            tag.setAttribute(key, value)
-        properties.appendChild(tag)
+            tag.set(key, value)
 
-        file = open(self.projectPathDict["projectmainfile"], "w")
-        file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-        file.write(dom_document.toString())
-        file.close()
+        try:
+            tree = ET.ElementTree(root)
+            with open(project_file, "wb") as f:
+                tree.write(f, encoding="UTF-8", xml_declaration=True)
+        except Exception as e:
+            print("setMainScript: failed to write project.xml:", e)
 
 
 class SearchThread(QtCore.QThread):

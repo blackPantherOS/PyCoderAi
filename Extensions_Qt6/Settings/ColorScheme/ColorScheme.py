@@ -1,9 +1,16 @@
 import os
-# FIXME QtXml is no longer supported.
-from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
+import json
+import xml.etree.ElementTree as ET
+
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from Extensions_Qt6.Settings.ColorScheme.StyleEditor import StyleEditor
 from Extensions_Qt6.Settings.ColorScheme.StyleLexer import StyleLexer
+
+# QtXml cleanup for color schemes:
+# Scheme files can be legacy XML or new JSON.
+# We keep support for reading old .xml schemes.
+# New saves use JSON for simplicity (no QDom).
 
 
 class GetName(QtWidgets.QDialog):
@@ -200,64 +207,47 @@ class ColorScheme(QtWidgets.QDialog):
         self.editorStyler.propertyListWidget.setCurrentRow(0)
 
     def save(self, name=None):
-        # save style
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument("Scheme")
-
-        main = dom_document.createElement("Attributes")
-        dom_document.appendChild(main)
-
-        root = dom_document.createElement("lexer")
-        main.appendChild(root)
-
-        for key, value in self.lexerStyler.currentStyle.items():
-            tag = dom_document.createElement("property")
-            tag.setAttribute("font", value[0])
-            tag.setAttribute("color", value[1])
-            tag.setAttribute("size", value[2])
-            tag.setAttribute("bold", str(value[3]))
-            tag.setAttribute("italic", str(value[4]))
-            tag.setAttribute("paper", value[5])
-
-            t = dom_document.createTextNode(key)
-            tag.appendChild(t)
-            root.appendChild(tag)
-
-        root = dom_document.createElement("editor")
-        main.appendChild(root)
-
-        for key, value in self.editorStyler.currentProperties.items():
-            tag = dom_document.createElement("property")
-            root.appendChild(tag)
-
-            tag.setAttribute("background", value[0])
-            tag.setAttribute("foreground", value[1])
-            if key == "Calltips":
-                tag.setAttribute("highLight", value[2])
-            if key == "Number Margin":
-                tag.setAttribute("font", value[2])
-                tag.setAttribute("size", str(value[3]))
-                tag.setAttribute("bold", str(value[4]))
-                tag.setAttribute("italic", str(value[5]))
-
-            t = dom_document.createTextNode(key)
-            tag.appendChild(t)
-
+        # QtXml cleanup: save as JSON.
         if name is None:
             name = self.schemeNameBox.currentText()
         groupName = self.schemeTypeBox.currentText()
         path = os.path.join(
-            self.useData.appPathDict["stylesdir"], groupName, name + '.xml')
+            self.useData.appPathDict["stylesdir"], groupName, name + '.json')
+
+        data = {
+            "lexer": {},
+            "editor": {}
+        }
+
+        for key, value in self.lexerStyler.currentStyle.items():
+            data["lexer"][key] = {
+                "font": value[0],
+                "color": value[1],
+                "size": value[2],
+                "bold": bool(value[3]),
+                "italic": bool(value[4]),
+                "paper": value[5]
+            }
+
+        for key, value in self.editorStyler.currentProperties.items():
+            data["editor"][key] = {
+                "background": value[0],
+                "foreground": value[1]
+            }
+            if key == "Calltips":
+                data["editor"][key]["highLight"] = value[2]
+            if key == "Number Margin":
+                data["editor"][key]["font"] = value[2]
+                data["editor"][key]["size"] = str(value[3])
+                data["editor"][key]["bold"] = bool(value[4])
+                data["editor"][key]["italic"] = bool(value[5])
+
         try:
-            file = open(path, "w")
-            file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-            file.write(dom_document.toString())
-            file.close()
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
         except Exception as err:
             message = QtWidgets.QMessageBox.warning(self, _("Save"),
-                                                _("Saving failed: {0}").format(str(err)))
-            file.close()
-            return
+                                                _("Saving scheme failed!\n\n{0}").format(str(err)))
 
     def saveStyleChanges(self):
         currentScheme = self.schemeNameBox.currentText()

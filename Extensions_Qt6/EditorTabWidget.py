@@ -5,8 +5,12 @@ import time
 import traceback
 import logging
 
-# FIXME QtXml is no longer supported.
-from PyQt6 import QtCore, QtGui, QtPrintSupport, QtWidgets, QtXml
+import json
+import xml.etree.ElementTree as ET
+
+from PyQt6 import QtCore, QtGui, QtPrintSupport, QtWidgets
+
+# QtXml cleanup in progress for session data.
 from PyQt6.Qsci import QsciScintilla
 
 from Extensions_Qt6.Diff import DiffWindow
@@ -601,63 +605,38 @@ class EditorTabWidget(QtWidgets.QTabWidget):
         self.saveSession(True)
 
     def saveSession(self, backup=False):
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument("session")
-
-        session = dom_document.createElement("session")
-        dom_document.appendChild(session)
-
+        # JSON after QtXml cleanup.
+        session_data = []
+        current_idx = self.currentIndex()
         for i in range(self.count()):
             editor = self.getEditor(i)
-
-            tag = dom_document.createElement("file")
             path = self.getEditorData("filePath", i)
-            if not backup:
-                if path is None:
-                    continue
-            tag.setAttribute("path", path)
-
-            path = str(self.getEditorData("filePath", i))
-            tag.setAttribute("active", str(
-                self.currentEditor == editor))
-
-            locked = editor.isReadOnly()
-            tag.setAttribute("locked", str(locked))
-
-            tag.setAttribute("lines", str(editor.lines()))
-
-            line, index = editor.getCursorPosition()
-            tag.setAttribute("cursorPosition", str(line) + ',' + str(index))
-
-            firstVisibleLine = editor.firstVisibleLine()
-            tag.setAttribute("firstVisibleLine", str(firstVisibleLine))
-
-            bookmarkLines = editor.getBookmarks()
-            tag.setAttribute("bookmarks",
-                             str(bookmarkLines).replace(', ', '-').strip('[]'))
-
-            folds = editor.contractedFolds()
-            tag.setAttribute("folds",
-                             str(folds).replace(', ', '-').strip('[]'))
-
+            if not backup and path is None:
+                continue
+            entry = {
+                "path": str(path) if path else "",
+                "active": (i == current_idx),
+                "locked": bool(editor.isReadOnly()),
+                "lines": int(editor.lines()),
+                "cursorPosition": ",".join(map(str, editor.getCursorPosition())),
+                "firstVisibleLine": int(editor.firstVisibleLine()),
+                "bookmarks": str(editor.getBookmarks()).replace(', ', '-').strip('[]'),
+                "folds": str(editor.contractedFolds()).replace(', ', '-').strip('[]')
+            }
             if backup:
-                key = self.getEditorData("backupKey", i)
-                tag.setAttribute("backupKey", key)
-                tag.setAttribute("baseName", self.tabText(i))
-
-            session.appendChild(tag)
+                entry["backupKey"] = self.getEditorData("backupKey", i)
+                entry["baseName"] = self.tabText(i)
+            session_data.append(entry)
 
         if backup:
             savePath = self.projectPathDict["backupfile"]
         else:
             savePath = self.projectPathDict["session"]
-        file = open(savePath, "w")
-        file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-        #vector for Debug:xml_content = dom_document.toString()
-        #print("Session dokumentum tartalma:")
-        #print(xml_content)
-        file.write(dom_document.toString())
-        file.close()
+        try:
+            with open(savePath, "w", encoding="utf-8") as f:
+                json.dump(session_data, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            print("Session save failed:", e)
 
     def restoreSession(self):
         # TODO: When backup is True and it turns out empty because
@@ -672,106 +651,152 @@ class EditorTabWidget(QtWidgets.QTabWidget):
             self.clearBackups()
             loadPath = self.projectPathDict["session"]
 
-        file = open(loadPath, "r")
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument()
-        dom_document.setContent(file.read())
-        file.close()
+        # QtXml cleanup: support JSON (new, list or object) and legacy XML for session restore.
+        # Note: saveSession writes a JSON *list* (starts with '['), so check for [ or {.
+        # Legacy XML had <file ...> children (possibly under <session> or root).
+        try:
+            with open(loadPath, "r", encoding="utf-8") as f:
+                content = f.read().strip()
+            session_data = []
+            if content:
+                # Prefer JSON (new format after QtXml cleanup: always a list [...] of tab entries)
+                if content[0] in '[{':
+                    try:
+                        parsed = json.loads(content)
+                        if isinstance(parsed, list):
+                            session_data = parsed
+                    except Exception:
+                        pass
+                # Fallback to legacy XML (old <file path=...> etc, possibly wrapped)
+                if not session_data:
+                    try:
+                        root = ET.fromstring(content)
+                        for child in root:
+                            if child.tag == "file":
+                                entry = {
+                                    "path": child.get("path", ""),
+                                    "active": child.get("active", "False") == "True",
+                                    "locked": child.get("locked", "False") == "True",
+                                    "lines": int(child.get("lines", 0)),
+                                    "cursorPosition": child.get("cursorPosition", "0,0"),
+                                    "firstVisibleLine": int(child.get("firstVisibleLine", 0)),
+                                    "bookmarks": child.get("bookmarks", ""),
+                                    "folds": child.get("folds", ""),
+                                }
+                                if backup:
+                                    entry["backupKey"] = child.get("backupKey", "")
+                                    entry["baseName"] = child.get("baseName", "")
+                                session_data.append(entry)
+                    except Exception:
+                        pass
+        except Exception as e:
+            print("Failed to load session:", e)
+            session_data = []
 
-        elements = dom_document.documentElement()
-        node = elements.firstChild()
         activeIndex = 0
-        currentIindex = 0
         restoredBackups = 0
-        while node.isNull() is False:
+
+        for entry in session_data:
             try:
-                tag = node.toElement()
+                # Always append successfully loaded tabs in session order.
+                # Using self.count() as insert index ensures we append.
+                # This avoids fragile currentIindex tracking that could cause
+                # getEditor wrong index or insert position errors (esp. with
+                # missing files or legacy data).
+                append_idx = self.count()
+
                 if backup and os.path.exists(loadPath):
-                    backupKey = tag.attribute("backupKey")
-                    basename = tag.attribute("baseName")
-                    backupPath = os.path.join(
-                        self.projectPathDict["backupdir"], backupKey)
-                    realPath = tag.attribute("path")
+                    backupKey = entry.get("backupKey", "")
+                    backupPath = os.path.join(self.projectPathDict["backupdir"], backupKey)
+                    realPath = entry.get("path", "")
                     if realPath == '':
-                        file = open(backupPath, 'r')
-                        backupText = file.read()
-                        file.close()
-
-                        # vector: try fix to old method
-                        subStack = self.newEditor(currentIindex)
-                        editor = subStack.widget(0).widget(0)
-                        editor.setText(backupText)
-                        editor.setModified(False)
-                        editor.setFocus()
-
-                        restoredBackups += 1
+                        try:
+                            with open(backupPath, 'r') as f:
+                                backupText = f.read()
+                            subStack = self.newEditor(append_idx)
+                            # Note: subStack.widget(0) is splitter, its .widget(0) or getEditor
+                            editor = subStack.widget(0).getEditor(0) if hasattr(subStack.widget(0), 'getEditor') else subStack.widget(0).widget(0)
+                            editor.setText(backupText)
+                            editor.setModified(False)
+                            editor.setFocus()
+                            restoredBackups += 1
+                        except Exception:
+                            pass
                     else:
                         try:
                             real_mod_time = os.stat(realPath).st_mtime
                             backup_mod_time = os.stat(backupPath).st_mtime
-                            if real_mod_time > backup_mod_time:
-                                pass
-                            else:
-                                file = open(backupPath, 'r')
-                                backupText = file.read()
-                                file.close()
-
-                                file = open(realPath, "w")
-                                file.write(backupText)
-                                file.close()
-
+                            if backup_mod_time > real_mod_time:
+                                with open(backupPath, 'r') as f:
+                                    backupText = f.read()
+                                with open(realPath, "w") as f:
+                                    f.write(backupText)
                                 restoredBackups += 1
-                        except:
-                            exc_type, exc_value, exc_traceback = sys.exc_info()
-                            logging.error(repr(traceback.format_exception(exc_type, exc_value,
-                                         exc_traceback)))
+                        except Exception:
+                            pass
 
-                        path = tag.attribute("path")
-                        loaded = self.loadfile(path, False, currentIindex)
+                        loaded = self.loadfile(realPath, False, append_idx)
                 else:
-                    path = tag.attribute("path")
-                    loaded = self.loadfile(path, False, currentIindex)
-                if loaded is False:
-                    node = node.nextSibling()
+                    realPath = entry.get("path", "")
+                    loaded = self.loadfile(realPath, False, append_idx)
+
+                if not loaded:
                     continue
 
-                locked = tag.attribute("locked")
-                if locked == 'True':
+                # After successful load, the new tab is at count-1
+                tab_idx = self.count() - 1
+
+                # Apply locked state
+                if entry.get("locked") in (True, 'True'):
                     self.writeLock()
-                lines = tag.attribute("lines")
-                active = tag.attribute("active")
-                if active == 'True':
-                    activeIndex = currentIindex
-                cp = tag.attribute("cursorPosition").split(',')
-                line = int(cp[0])
-                index = int(cp[1])
 
-                firstVisibleLine = int(tag.attribute("firstVisibleLine"))
+                # Track active tab (last one wins if multiple marked, or the one from session)
+                if entry.get("active") in (True, 'True'):
+                    activeIndex = tab_idx
 
-                editor = self.getEditor()
-                editor.setCursorPosition(line, 0)
-                editor.setFirstVisibleLine(firstVisibleLine)
+                # Basic cursor and visible line
+                cp = entry.get("cursorPosition", "0,0").split(',')
+                line = int(cp[0]) if len(cp) > 0 else 0
+                idx = int(cp[1]) if len(cp) > 1 else 0
+                firstVisibleLine = int(entry.get("firstVisibleLine", 0))
 
-                m = tag.attribute("bookmarks")
-                if m != '':
-                    bookmarks = list(map(int, m.split('-')))
-                    for line in bookmarks:
-                        editor.toggleBookmark(1, line)
+                editor = self.getEditor(tab_idx)
+                if editor:
+                    try:
+                        editor.setCursorPosition(line, idx)
+                        editor.setFirstVisibleLine(firstVisibleLine)
+                    except Exception:
+                        pass
 
-                folds = tag.attribute("folds")
-                if folds != '':
-                    folds = list(map(int, folds.split('-')))
-                    editor.setContractedFolds(folds)
+                # Bookmarks
+                m = entry.get("bookmarks", "")
+                if m and editor:
+                    try:
+                        bookmarks = [int(x) for x in m.split('-') if x.strip()]
+                        for bline in bookmarks:
+                            editor.toggleBookmark(1, bline)
+                    except Exception:
+                        pass
 
-                currentIindex += 1
-                node = node.nextSibling()
-            except:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                logging.error(repr(traceback.format_exception(exc_type, exc_value,
-                             exc_traceback)))
-                node = node.nextSibling()
-        if self.count() != 0:
+                # Folds
+                f = entry.get("folds", "")
+                if f and editor:
+                    try:
+                        folds = [int(x) for x in f.split('-') if x.strip()]
+                        editor.setContractedFolds(folds)
+                    except Exception:
+                        pass
+
+            except Exception as e:
+                print("Error restoring session entry:", e)
+                continue
+
+        # Set the active tab from session (or 0)
+        if self.count() > 0:
+            if activeIndex >= self.count():
+                activeIndex = 0
             self.setCurrentIndex(activeIndex)
+
         if self.count() == 0:
             self._newPythonFile()
 

@@ -1,8 +1,9 @@
 import os
 import sys
 import shutil
-# FIXME QtXml is no longer supported.
-from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
+import xml.etree.ElementTree as ET  # QtXml migration (full cleanup for build profile)
+
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from Extensions_Qt6.Projects.ProjectManager.ProjectView.ProjectView import IconProvider
 from venv import EnvBuilder
@@ -207,8 +208,8 @@ class RopeConfig(QtWidgets.QWidget):
     def save(self):
         fileName = self.projectPathDict["ropeprofile"]
 
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument("rope_profile")
+        # QtXml migration
+        root = ET.Element("rope")
 
         main_data = dom_document.createElement("rope")
         dom_document.appendChild(main_data)
@@ -766,142 +767,101 @@ class BuildConfig(QtWidgets.QWidget):
                         self, _("Failed Remove"), str(err))
 
     def save(self):
+        # QtXml migration: use ElementTree (replaces QDomDocument in BuildConfig)
         fileName = self.projectPathDict["buildprofile"]
 
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument("build_profile")
+        root = ET.Element("build")
 
-        main_data = dom_document.createElement("build")
-        dom_document.appendChild(main_data)
+        # Scalar fields from UI widgets (preserve previous save behavior and key casing)
+        scalars = [
+            ("name", self.itemLine.text().strip()),
+            ("author", self.authorLine.text().strip()),
+            ("version", self.versionLine.text().strip()),
+            ("comments", self.commentsLine.text().strip()),
+            ("description", self.descriptionLine.text().strip()),
+            ("company", self.companyLine.text().strip()),
+            ("copyright", self.copyrightLine.text().strip()),
+            ("trademarks", self.trademarksLine.text().strip()),
+            ("product", self.productLine.text().strip()),
+            ("base", self.windowTypeBox.currentText()),
+            ("icon", self.iconBox.currentText()),
+            ("compress", self.compressBox.currentText()),
+            ("optimize", self.optimizeBox.currentText()),
+            ("copydeps", self.copyDepsBox.currentText()),
+            ("appendscripttoexe", self.appendScriptToExeBox.currentText()),
+            ("appendscripttolibrary", self.appendScriptToLibraryBox.currentText()),
+        ]
+        for tag_name, text in scalars:
+            elem = ET.SubElement(root, tag_name)
+            elem.text = text
 
-        root = dom_document.createElement("name")
-        attrib = dom_document.createTextNode(self.itemLine.text().strip())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("author")
-        attrib = dom_document.createTextNode(self.authorLine.text().strip())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("version")
-        attrib = dom_document.createTextNode(self.versionLine.text().strip())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("comments")
-        attrib = dom_document.createTextNode(self.commentsLine.text().strip())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("description")
-        attrib = dom_document.createTextNode(
-            self.descriptionLine.text().strip())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("company")
-        attrib = dom_document.createTextNode(self.companyLine.text().strip())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("copyright")
-        attrib = dom_document.createTextNode(self.copyrightLine.text().strip())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("trademarks")
-        attrib = dom_document.createTextNode(
-            self.trademarksLine.text().strip())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("product")
-        attrib = dom_document.createTextNode(self.productLine.text().strip())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("base")
-        attrib = dom_document.createTextNode(self.windowTypeBox.currentText())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("icon")
-        attrib = dom_document.createTextNode(self.iconBox.currentText())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("compress")
-        attrib = dom_document.createTextNode(self.compressBox.currentText())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("optimize")
-        attrib = dom_document.createTextNode(self.optimizeBox.currentText())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("copydeps")
-        attrib = dom_document.createTextNode(self.copyDepsBox.currentText())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("appendscripttoexe")
-        attrib = dom_document.createTextNode(
-            self.appendScriptToExeBox.currentText())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("appendscripttolibrary")
-        attrib = dom_document.createTextNode(
-            self.appendScriptToLibraryBox.currentText())
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
+        # List sections (keys use spaces in self.lists, tags use dashes)
         for key, value in self.lists.items():
-            root = dom_document.createElement(key.replace(' ', '-'))
-            main_data.appendChild(root)
+            tag_name = key.replace(' ', '-')
+            container = ET.SubElement(root, tag_name)
             for i in value:
-                tag = dom_document.createElement("item")
-                root.appendChild(tag)
-
-                t = dom_document.createTextNode(i)
-                tag.appendChild(t)
+                item = ET.SubElement(container, "item")
+                item.text = i
 
         try:
-            file = open(fileName, "w")
-            file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-            file.write(dom_document.toString())
-            file.close()
-        except:
+            tree = ET.ElementTree(root)
+            with open(fileName, "wb") as f:
+                tree.write(f, encoding="UTF-8", xml_declaration=True)
+        except Exception:
             message = QtWidgets.QMessageBox.warning(
                 self, _("Save Profile"), _("Saving failed!"))
 
     def load(self):
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument()
-        file = open(self.projectPathDict["buildprofile"], "r")
-        dom_document.setContent(file.read())
-        file.close()
-
+        # QtXml migration: use ElementTree (replaces QDomDocument in BuildConfig)
+        fileName = self.projectPathDict["buildprofile"]
         dataDict = {}
 
-        elements = dom_document.documentElement()
-        node = elements.firstChild()
-        while node.isNull() is False:
-            name = node.nodeName()
-            expandedName = name.replace('-', ' ')
-            if expandedName in self.lists:
-                sub_node = node.firstChild()
-                while sub_node.isNull() is False:
-                    sub_prop = sub_node.toElement()
-                    self.lists[expandedName].append(sub_prop.text())
-                    sub_node = sub_node.nextSibling()
-                dataDict[expandedName] = self.lists[expandedName]
-            else:
-                sub_prop = node.toElement()
-                dataDict[name] = sub_prop.text()
-            node = node.nextSibling()
+        # Provide safe defaults so missing/broken build profiles (e.g. repaired projects)
+        # do not crash ConfigureProject / EditorWindow creation for Desktop apps.
+        defaults = {
+            "name": "",
+            "author": "",
+            "version": "0.1",
+            "comments": "",
+            "description": "",
+            "company": "",
+            "copyright": "",
+            "trademarks": "",
+            "product": "",
+            "base": "",
+            "icon": "",
+            "compress": "Compress",
+            "optimize": "Optimize",
+            "copydeps": "Copy Dependencies",
+            "appendscripttoexe": "Append Script to Exe",
+            "appendscripttolibrary": "Append Script to Library",
+        }
+        for k, v in defaults.items():
+            dataDict[k] = v
+
+        if not os.path.exists(fileName):
+            return dataDict
+
+        try:
+            tree = ET.parse(fileName)
+            root = tree.getroot()
+            for child in list(root):
+                name = child.tag
+                expandedName = name.replace('-', ' ')
+                if expandedName in self.lists:
+                    for item in child.findall("item"):
+                        txt = item.text or ""
+                        if txt:
+                            self.lists[expandedName].append(txt)
+                    dataDict[expandedName] = self.lists[expandedName]
+                else:
+                    dataDict[name] = child.text or ""
+        except Exception as e:
+            print("Failed to load build profile with ET, using defaults:", e)
+
+        # Ensure all expected keys exist (defensive)
+        for k, v in defaults.items():
+            dataDict.setdefault(k, v)
         return dataDict
 
 

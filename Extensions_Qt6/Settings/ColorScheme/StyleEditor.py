@@ -1,7 +1,11 @@
 import sys
 import os
-# FIXME QtXml is no longer supported.
-from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
+import json
+import xml.etree.ElementTree as ET
+
+from PyQt6 import QtCore, QtGui, QtWidgets
+
+# QtXml cleanup - JSON for editor properties.
 from PyQt6.Qsci import QsciScintilla
 
 from Extensions_Qt6.Settings.ColorScheme.ColorChooser import ColorChooser
@@ -328,44 +332,48 @@ class StyleEditor(QtWidgets.QWidget):
 
             return properties
 
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument()
-
-        try:
-            path = os.path.join(self.useData.appPathDict[
-                            "stylesdir"], groupName, style_name + ".xml")
-            file = open(path, "r")
-        except:
-            path = os.path.join(self.useData.appPathDict[
-                            "stylesdir"], groupName, "blackPantherDark.xml")
-            file = open(path, "r")
-            
-        file = open(path, "r")
-        dom_document.setContent(file.read())
-        file.close()
-
-        properties = {}
-
-        rootElement = dom_document.documentElement()
-        propertyElement = rootElement.firstChild()
-        propertyElement = propertyElement.nextSiblingElement().toElement()
-        node = propertyElement.firstChild()
-        while node.isNull() is False:
-            tag = node.toElement()
-            name = tag.text()
-            background = tag.attribute("background")
-            foreground = tag.attribute("foreground")
-
-            properties[name] = [background, foreground]
-            if name == "Calltips":
-                properties[name].append(tag.attribute("highLight"))
-            if name == "Number Margin":
-                properties[name].append(tag.attribute("font"))
-                properties[name].append(int(tag.attribute("size")))
-                bold = (tag.attribute("bold") == "True")
-                properties[name].append(bold)
-                italic = (tag.attribute("italic") == "True")
-                properties[name].append(italic)
-            node = node.nextSibling()
-
-        return properties
+        # QtXml cleanup: JSON + legacy XML support via ET
+        for ext in (".json", ".xml"):
+            try:
+                path = os.path.join(self.useData.appPathDict[
+                                "stylesdir"], groupName, style_name + ext)
+                if not os.path.exists(path):
+                    continue
+                with open(path, "r", encoding="utf-8") as f:
+                    content = f.read().strip()
+                if ext == ".json":
+                    data = json.loads(content)
+                    props = {}
+                    for name, val in data.get("editor", {}).items():
+                        props[name] = [val.get("background", ""), val.get("foreground", "")]
+                        if name == "Calltips":
+                            props[name].append(val.get("highLight", ""))
+                        if name == "Number Margin":
+                            props[name].append(val.get("font", ""))
+                            props[name].append(int(val.get("size", 10)))
+                            props[name].append(bool(val.get("bold", False)))
+                            props[name].append(bool(val.get("italic", False)))
+                    return props
+                else:
+                    # Legacy XML: only parse <editor> section
+                    root = ET.fromstring(content)
+                    editorElement = root.find(".//editor")
+                    props = {}
+                    if editorElement is not None:
+                        for tag in editorElement.findall("property"):
+                            name = tag.text or ""
+                            props[name] = [
+                                tag.get("background", ""),
+                                tag.get("foreground", "")
+                            ]
+                            if name == "Calltips":
+                                props[name].append(tag.get("highLight", ""))
+                            if name == "Number Margin":
+                                props[name].append(tag.get("font", ""))
+                                props[name].append(int(tag.get("size", 10)))
+                                props[name].append(tag.get("bold", "False") == "True")
+                                props[name].append(tag.get("italic", "False") == "True")
+                    return props
+            except Exception:
+                continue
+        return {}

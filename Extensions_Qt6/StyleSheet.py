@@ -675,32 +675,38 @@ projectTitleBoxStyle = """
 bottomSwitcherStyle = """
 
         QPushButton {
-             min-height: 17px;
-             background: none;
-             border: none;
-             border-radius: 0px;
+             min-height: 20px;
+             background: #2a2a2a;
+             border: 1px solid #444;
+             border-radius: 3px;
              min-width: 13ex;
-             padding: 2px;
+             padding: 3px 8px;
+             color: #aaa;
+             margin: 1px;
         }
 
         QPushButton:hover {
-             color: black;
-             background: none;
+             color: #fff;
+             background: #3a3a3a;
+             border: 1px solid #05a5ff;
         }
 
         QPushButton:pressed {
-            background: none;
+            background: #1a1a1a;
+            color: #05a5ff;
         }
 
         QPushButton:checked {
-             color: black;
-             border-left: 1px solid lightgray;
-             border-right: 1px solid lightgray;
+             color: #fff;
+             background: #0d6efd;
+             border: 1px solid #0a58ca;
+             font-weight: bold;
         }
 
         QPushButton:disabled {
-            color: black;
-            background: #FFFFFF;
+            color: #666;
+            background: #1a1a1a;
+            border: 1px solid #333;
         }
         """
 

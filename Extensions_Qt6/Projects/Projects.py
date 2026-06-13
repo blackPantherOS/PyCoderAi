@@ -7,8 +7,10 @@ import sys
 import shutil
 import traceback
 import logging
-# FIXME QtXml is no longer supported.
-from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
+import json
+import xml.etree.ElementTree as ET  # QtXml migration - legacy project.xml etc.
+
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from Extensions_Qt6.EditorWindow.EditorWindow import EditorWindow
 from Extensions_Qt6.Projects.NewProjectDialog import NewProjectDialog
@@ -78,47 +80,27 @@ class CreateProjectThread(QtCore.QThread):
             self.error = str(err)
 
     def writeProjectData(self):
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument("Project")
+        # QtXml migration: use ElementTree
+        root = ET.Element("properties")
+        project = ET.SubElement(root, "pycoder_project")
+        project.set("Version", "0.1")
+        project.set("Name", self.projDataDict["name"])
+        project.set("Type", self.projDataDict["type"])
+        project.set("MainScript", self.projDataDict["mainscript"])
 
-        properties = dom_document.createElement("properties")
-        dom_document.appendChild(properties)
+        tree = ET.ElementTree(root)
+        with open(os.path.join(self.projectPath, "project.xml"), "wb") as f:
+            tree.write(f, encoding="UTF-8", xml_declaration=True)
 
-        tag = dom_document.createElement("pycoder_project")
+        # QtXml migration: use ElementTree for projectdata.xml
+        root = ET.Element("projectdata")
 
-        tag.setAttribute("Version", "0.1")
-        tag.setAttribute("Name", self.projDataDict["name"])
-        tag.setAttribute("Type", self.projDataDict["type"])
-        tag.setAttribute("MainScript", self.projDataDict["mainscript"])
+        for section in ["shortcuts", "recentfiles", "favourites", "settings"]:
+            ET.SubElement(root, section)
 
-        properties.appendChild(tag)
-
-        file = open(os.path.join(self.projectPath, "project.xml"), "w")
-        file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-        file.write(dom_document.toString())
-        file.close()
-
-        # FIXME QtXml is no longer supported.
-        domDocument = QtXml.QDomDocument("projectdata")
-
-        projectdata = domDocument.createElement("projectdata")
-        domDocument.appendChild(projectdata)
-
-        root = domDocument.createElement("shortcuts")
-        projectdata.appendChild(root)
-
-        root = domDocument.createElement("recentfiles")
-        projectdata.appendChild(root)
-
-        root = domDocument.createElement("favourites")
-        projectdata.appendChild(root)
-
-        root = domDocument.createElement("settings")
-        projectdata.appendChild(root)
-
-        s = 0
+        # settings with defaults
+        settings_elem = root.find("settings")
         defaults = {
-
             'ClearOutputWindowOnRun': 'False',
             'LastOpenedPath': '',
             'RunType': _('Run'),
@@ -133,195 +115,100 @@ class CreateProjectThread(QtCore.QThread):
             'Icon': '',
             'ShowAllFiles': 'True',
             'LastCloseSuccessful': 'True'
-            }
+        }
         for key, value in defaults.items():
-            tag = domDocument.createElement("key")
-            root.appendChild(tag)
-
-            t = domDocument.createTextNode(key + '=' + value)
-            tag.appendChild(t)
-            s += 1
+            tag = ET.SubElement(settings_elem, "key")
+            tag.text = f"{key}={value}"
 
         path = os.path.join(self.projectPath, "Data", "projectdata.xml")
-        file = open(path, "w")
-        file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-        file.write(domDocument.toString())
-        file.close()
+        tree = ET.ElementTree(root)
+        with open(path, "wb") as f:
+            tree.write(f, encoding="UTF-8", xml_declaration=True)
 
     def writeDefaultSession(self):
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument("session")
-
-        session = dom_document.createElement("session")
-        dom_document.appendChild(session)
-
-        file = open(os.path.join(self.projectPath, "Data", "session.xml"), "w")
-        file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-        file.write(dom_document.toString())
-        file.close()
+        # QtXml migration: minimal empty session as JSON (to match new format)
+        # Note: the session format was migrated to JSON list of dicts in EditorTabWidget.
+        # For new projects, write an empty list as JSON.
+        session_path = os.path.join(self.projectPath, "Data", "session.xml")
+        with open(session_path, "w", encoding="utf-8") as f:
+            json.dump([], f)  # empty session; will be populated on first use
 
     def writeRopeProfile(self):
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument("rope_profile")
+        # QtXml migration: write simple rope profile as XML using ET (to keep compatibility with rope)
+        root = ET.Element("rope")
 
-        main_data = dom_document.createElement("rope")
-        dom_document.appendChild(main_data)
+        for tag_name, text in [
+            ("ignoresyntaxerrors", ""),
+            ("ignorebadimports", ""),
+            ("maxhistoryitems", "32"),
+        ]:
+            elem = ET.SubElement(root, tag_name)
+            elem.text = text
 
-        root = dom_document.createElement("ignoresyntaxerrors")
-        attrib = dom_document.createTextNode('')
-        root.appendChild(attrib)
-        main_data.appendChild(root)
+        ext_elem = ET.SubElement(root, "Extensions_Qt6")
+        for ext in ["*.py", "*.pyw"]:
+            item = ET.SubElement(ext_elem, "item")
+            item.text = ext
 
-        root = dom_document.createElement("ignorebadimports")
-        attrib = dom_document.createTextNode('')
-        root.appendChild(attrib)
-        main_data.appendChild(root)
+        ignore_elem = ET.SubElement(root, "IgnoredResources")
+        for ign in ["*.pyc", "*~", ".ropeproject", ".hg", ".svn", "_svn", ".git", "__pycache__"]:
+            item = ET.SubElement(ignore_elem, "item")
+            item.text = ign
 
-        root = dom_document.createElement("maxhistoryitems")
-        attrib = dom_document.createTextNode('32')
-        root.appendChild(attrib)
-        main_data.appendChild(root)
+        ET.SubElement(root, "CustomFolders")
 
-        root = dom_document.createElement("Extensions_Qt6")
-        main_data.appendChild(root)
-
-        defExt = ['*.py', '*.pyw']
-        for i in defExt:
-            tag = dom_document.createElement("item")
-            root.appendChild(tag)
-
-            t = dom_document.createTextNode(i)
-            tag.appendChild(t)
-
-        root = dom_document.createElement("IgnoredResources")
-        main_data.appendChild(root)
-
-        defIgnore = ["*.pyc", "*~", ".ropeproject",
-                     ".hg", ".svn", "_svn", ".git", "__pycache__"]
-        for i in defIgnore:
-            tag = dom_document.createElement("item")
-            root.appendChild(tag)
-
-            t = dom_document.createTextNode(i)
-            tag.appendChild(t)
-
-        root = dom_document.createElement("CustomFolders")
-        main_data.appendChild(root)
-
-        file = open(os.path.join(self.projectPath, "Rope", "profile.xml"), "w")
-        file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-        file.write(dom_document.toString())
-        file.close()
+        tree = ET.ElementTree(root)
+        with open(os.path.join(self.projectPath, "Rope", "profile.xml"), "wb") as f:
+            tree.write(f, encoding="UTF-8", xml_declaration=True)
 
     def writeBuildProfile(self):
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument("build_profile")
+        # QtXml migration: full build profile using ET (replaces the old QDom version)
+        root = ET.Element("build")
 
-        main_data = dom_document.createElement("build")
-        dom_document.appendChild(main_data)
+        # Basic metadata
+        for tag_name, text in [
+            ("name", ""),
+            ("author", ""),
+            ("version", "0.1"),
+            ("comments", ""),
+            ("description", ""),
+            ("company", ""),
+            ("copyright", ""),
+            ("trademarks", ""),
+            ("product", ""),
+            ("base", self.projDataDict.get("windowtype", "")),
+        ]:
+            elem = ET.SubElement(root, tag_name)
+            elem.text = text
 
-        root = dom_document.createElement("name")
-        attrib = dom_document.createTextNode('')
-        root.appendChild(attrib)
-        main_data.appendChild(root)
+        # Icon
+        icon = ET.SubElement(root, "icon")
+        icon.text = ""
 
-        root = dom_document.createElement("author")
-        attrib = dom_document.createTextNode('')
-        root.appendChild(attrib)
-        main_data.appendChild(root)
+        # Options
+        for tag_name, text in [
+            ("compress", "Compress"),
+            ("optimize", "Optimize"),
+            ("copydeps", "Copy Dependencies"),
+            ("appendscripttoexe", "Append Script to Exe"),
+            ("appendscripttolibrary", "Append Script to Library"),
+        ]:
+            elem = ET.SubElement(root, tag_name)
+            elem.text = text
 
-        root = dom_document.createElement("version")
-        attrib = dom_document.createTextNode('0.1')
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("comments")
-        attrib = dom_document.createTextNode('')
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("description")
-        attrib = dom_document.createTextNode('')
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("company")
-        attrib = dom_document.createTextNode('')
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("copyright")
-        attrib = dom_document.createTextNode('')
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("trademarks")
-        attrib = dom_document.createTextNode('')
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("product")
-        attrib = dom_document.createTextNode('')
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("base")
-        attrib = dom_document.createTextNode(self.projDataDict["windowtype"])
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("icon")
-        attrib = dom_document.createTextNode('')
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("compress")
-        attrib = dom_document.createTextNode("Compress")
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("optimize")
-        attrib = dom_document.createTextNode("Optimize")
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("copydeps")
-        attrib = dom_document.createTextNode("Copy Dependencies")
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("appendscripttoexe")
-        attrib = dom_document.createTextNode("Append Script to Exe")
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        root = dom_document.createElement("appendscripttolibrary")
-        attrib = dom_document.createTextNode("Append Script to Library")
-        root.appendChild(attrib)
-        main_data.appendChild(root)
-
-        lists = ["Includes",
-                 "Excludes",
-                 "Constants Modules",
-                 "Packages",
-                 "Replace Paths",
-                 "Bin Includes",
-                 "Bin Excludes",
-                 "Bin Path Includes",
-                 "Bin Path Excludes",
-                 "Zip Includes",
-                 "Include Files",
-                 "Namespace Packages"]
-
+        # Various lists (empty by default for new project)
+        lists = [
+            "Includes", "Excludes", "Constants Modules", "Packages",
+            "Replace Paths", "Bin Includes", "Bin Excludes",
+            "Bin Path Includes", "Bin Path Excludes", "Zip Includes",
+            "Include Files", "Namespace Packages"
+        ]
         for i in lists:
-            root = dom_document.createElement(i.replace(' ', '-'))
-            main_data.appendChild(root)
+            ET.SubElement(root, i.replace(' ', '-'))
 
-        file = open(
-            os.path.join(self.projectPath, "Build", "profile.xml"), "w")
-        file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-        file.write(dom_document.toString())
-        file.close()
+        tree = ET.ElementTree(root)
+        with open(os.path.join(self.projectPath, "Build", "profile.xml"), "wb") as f:
+            tree.write(f, encoding="UTF-8", xml_declaration=True)
 
     def create(self, data):
         self.projDataDict = data
@@ -354,35 +241,71 @@ class Projects(QtWidgets.QWidget):
         self.pycoder.close()
 
     def readProject(self, path):
-        # validate project
+        # validate project - now much more robust after QtXml cleanup
         project_file = os.path.join(path, "project.xml")
-        if os.path.exists(project_file) is False:
-            return False
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument()
-        file = open(os.path.join(path, "project.xml"), "r")
-        dom_document.setContent(file.read())
-        file.close()
+        valid_data = None
 
-        data = {}
+        if os.path.exists(project_file):
+            try:
+                tree = ET.parse(project_file)
+                root = tree.getroot()
+                name = root.tag
+                # Support legacy direct-root <pycoder_project .../> and current <properties><pycoder_project .../></properties>
+                proj = root
+                if name != "pycoder_project":
+                    cand = root.find("pycoder_project")
+                    if cand is not None:
+                        proj = cand
+                data = {
+                    "Version": proj.get("Version", ""),
+                    "Type": proj.get("Type", ""),
+                    "Name": proj.get("Name", ""),
+                    "MainScript": proj.get("MainScript", "")
+                }
+                if proj.tag == "pycoder_project" and (data.get("Name") or data.get("MainScript")):
+                    valid_data = ("pycoder_project", data)
+            except Exception as e:
+                print("Failed to parse existing project.xml with ET:", e)
+                # fall through to repair
 
-        elements = dom_document.documentElement()
-        node = elements.firstChild()
-        while node.isNull() is False:
-            tag = node.toElement()
-            name = tag.tagName()
-            data["Version"] = tag.attribute("Version")
-            data["Type"] = tag.attribute("Type")
-            data["Name"] = tag.attribute("Name")
-            data["MainScript"] = tag.attribute("MainScript")
-            node = node.nextSibling()
+        if valid_data is None:
+            # Try to auto-create/repair a minimal project.xml
+            # This handles cases where project was created in broken state (missing or bad project.xml)
+            try:
+                p_name = os.path.basename(path)
+                src = os.path.join(path, "src")
+                main_script = "main.py"
+                if os.path.isdir(src):
+                    pys = [f for f in os.listdir(src) if f.endswith('.py')]
+                    if pys:
+                        main_script = pys[0]
+                # Create minimal
+                root = ET.Element("properties")
+                proj = ET.SubElement(root, "pycoder_project")
+                proj.set("Version", "0.1")
+                proj.set("Name", p_name)
+                proj.set("Type", "Desktop Application")
+                proj.set("MainScript", main_script)
 
-        if name != "pycoder_project":
-            return False
-        else:
-            return name, data
+                tree = ET.ElementTree(root)
+                with open(project_file, "wb") as f:
+                    tree.write(f, encoding="UTF-8", xml_declaration=True)
+
+                print("Auto-repaired/created project.xml for", path)
+                valid_data = ("pycoder_project", {
+                    "Version": "0.1",
+                    "Type": "Desktop Application",
+                    "Name": p_name,
+                    "MainScript": main_script
+                })
+            except Exception as e:
+                print("Failed to auto-repair project.xml for", path, ":", e)
+                return False
+
+        return valid_data
 
     def loadProject(self, path, show, new):
+        print("DEBUG loadProject called for:", path)
         if not self.pycoder.showProject(path):
             QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.CursorShape.WaitCursor)
             projectPathDict = {
@@ -417,10 +340,12 @@ class Projects(QtWidgets.QWidget):
             try:
                 project_data = self.readProject(path)
                 if project_data is False:
+                    print("DEBUG: readProject returned False for", path)
                     QtWidgets.QApplication.restoreOverrideCursor()
                     message = QtWidgets.QMessageBox.warning(self, _("Open Project"),
                                                         _("Failed:\n\n") + path)
                     return
+                print("DEBUG: readProject succeeded for", path, "data:", project_data[1])
                 projectPathDict["name"] = project_data[1]["Name"]
                 projectPathDict["type"] = project_data[1]["Type"]
                 projectPathDict["mainscript"] = os.path.join(path, "src",
@@ -434,6 +359,14 @@ class Projects(QtWidgets.QWidget):
                 else:
                     projectPathDict["builddir"] = os.path.join(
                         path, "Build", "Linux")
+
+                # Ensure basic project structure exists (for projects that were partially/brokenly created)
+                for d in ["src", "Data", "Rope", "temp", projectPathDict.get("builddir", "")]:
+                    if d and not os.path.exists(d if os.path.isabs(d) else os.path.join(path, d)):
+                        try:
+                            os.makedirs(d if os.path.isabs(d) else os.path.join(path, d), exist_ok=True)
+                        except:
+                            pass
 
                 # Create the directory that the user accidentally deleted
                 if not os.path.exists(projectPathDict["builddir"]):
@@ -472,6 +405,7 @@ class Projects(QtWidgets.QWidget):
                 logging.error(
                     repr(traceback.format_exception(exc_type, exc_value,
                              exc_traceback)))
+                print("DEBUG: exception in loadProject for", path, ":", str(err))
                 QtWidgets.QApplication.restoreOverrideCursor()
                 message = QtWidgets.QMessageBox.warning(self, _("Failed Open"),
                                                     _("Problem opening project: \n\n") + str(err))

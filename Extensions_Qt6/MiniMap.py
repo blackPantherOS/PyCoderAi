@@ -96,9 +96,27 @@ class MiniMap(QsciScintilla):
             except Exception:
                 pass
         
-        # Set default paper/background to match editor's current scheme
+        # Darken all style backgrounds slightly so the entire minimap has a consistently
+        # darker background than the main editor. This helps it stand out visually
+        # (especially useful when the minimap is narrow / side-docked).
+        factor = 0.82
+        for style in range(0, 256):
+            try:
+                back = self.SendScintilla(QsciScintilla.SCI_STYLEGETBACK, style)
+                bc = QtGui.QColor(back)
+                darker_back = QtGui.QColor(
+                    max(0, int(bc.red() * factor)),
+                    max(0, int(bc.green() * factor)),
+                    max(0, int(bc.blue() * factor))
+                )
+                self.SendScintilla(QsciScintilla.SCI_STYLESETBACK, style, darker_back)
+            except Exception:
+                pass
+        
+        # Set the default paper (overall background) to the darkened default style back.
+        # This ensures the minimap area is always a bit darker than the editor.
         try:
-            default_back = self.editor.SendScintilla(QsciScintilla.SCI_STYLEGETBACK, QsciScintilla.STYLE_DEFAULT)
+            default_back = self.SendScintilla(QsciScintilla.SCI_STYLEGETBACK, QsciScintilla.STYLE_DEFAULT)
             self.setPaper(QtGui.QColor(default_back))
             # Also set caret invisible in minimap (no blinking cursor needed)
             self.setCaretWidth(0)

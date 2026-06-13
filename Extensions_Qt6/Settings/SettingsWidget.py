@@ -46,3 +46,7 @@ class SettingsWidget(QtWidgets.QDialog):
 
         self.aiSettings = AISettings(self.useData.settings)
         self.settingsTab.addTab(self.aiSettings, _("AI Settings"))
+        # Ensure AI settings are saved when dialog closes.
+        # Non-modal QDialog emits ``rejected`` (via close button → reject()),
+        # so we use ``finished`` which fires on any close.
+        self.finished.connect(lambda _code: self.aiSettings.save_settings())

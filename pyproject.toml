@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pycoderai"
+version = "0.99.0"
+description = "PyCoderAi - LightWare Python IDE based on Qt6 with AI support (Ollama + Claude)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "GPL-3.0-or-later" }
+authors = [
+    { name = "Charles K Barcza", email = "kbarcza@blackpanther.hu" }
+]
+keywords = ["IDE", "Python", "Qt6", "PyQt6", "QScintilla", "AI", "Ollama", "editor"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Integrated Development Environments (IDE)",
+    "Topic :: Software Development :: Code Generators",
+]
+
+dependencies = [
+    "importlib-metadata>=6.0.0",
+    "packaging>=23.0",
+    "PyQt6>=6.5.2",
+    "PyQt6-sip>=13.4.0",
+    "pytoolconfig>=1.2.5",
+    "QScintilla>=2.14.1",
+    "tomli>=2.0.1",
+    "typing_extensions>=4.8.0",
+    "zipp>=3.8.0",
+    "rope>=1.12.0",
+    "requests>=2.31.0",
+]
+
+[project.optional-dependencies]
+ai-claude = [
+    "anthropic>=0.30.0",
+]
+build = [
+    "cx_Freeze>=7.0; sys_platform == 'win32' or sys_platform == 'darwin'",
+    "pyinstaller",
+]
+dev = [
+    "ruff",
+    "black",
+    "pyflakes",
+]
+
+[project.urls]
+Homepage = "https://github.com/blackPantherOS/PyCoder"
+Repository = "https://github.com/blackPantherOS/PyCoder"
+
+# Note: The legacy setup.py in this tree is a translation maintenance script
+# (xgettext/msgfmt for i18n), not a packaging setup. Use `pip install -e .` or
+# modern build tools. The script can be run directly as `python setup.py` for
+# updating .po / locales (it will still auto-run when executed as main script).
+
+[tool.setuptools]
+packages = ["Extensions_Qt6", "Extensions_Qt6.BottomWidgets", "Extensions_Qt6.EditorWindow", "Extensions_Qt6.Library", "Extensions_Qt6.Outline", "Extensions_Qt6.Projects", "Extensions_Qt6.Refactor", "Extensions_Qt6.Settings", "Extensions_Qt6.Settings.ColorScheme"]
+
+[tool.setuptools.package-dir]
+"" = "."
+
+# For a proper console entry in future:
+# [project.scripts]
+# pycoderai = "PyCoderAi:main"

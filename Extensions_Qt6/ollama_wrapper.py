@@ -47,7 +47,7 @@ class OllamaWrapper:
                 "options": {"num_predict": 1},
                 "keep_alive": "10m"
             }
-            response = requests.post(f"{self.base_url}/api/generate", json=data, timeout=30)
+            response = requests.post(f"{self.base_url}/api/generate", json=data, timeout=120)
             response.raise_for_status()
             self.loaded_models.add(model)
             print(f"[OLLAMA] Model {model} preloaded successfully")
@@ -57,12 +57,24 @@ class OllamaWrapper:
             return False
 
     def keepalive(self, model: str) -> bool:
-        """Send a lightweight ping to keep the model loaded (useful if USB drive spins down)."""
+        """Send a lightweight ping to keep the model loaded (useful if USB drive spins down).
+
+        NOTE: ``num_predict`` is set to 1 (not 0) because in many Ollama versions
+        ``num_predict=0`` means "predict unlimited tokens", not "predict 0 tokens" —
+        that would cause the model to generate until EOS on an empty prompt, wasting
+        time and potentially interfering with the subsequent real request.
+        """
         if model not in self.loaded_models:
             return self.preload_model(model)
         try:
-            data = {"model": model, "prompt": "", "stream": False, "options": {"num_predict": 0}, "keep_alive": "10m"}
-            response = requests.post(f"{self.base_url}/api/generate", json=data, timeout=5)
+            data = {
+                "model": model,
+                "prompt": "",
+                "stream": False,
+                "options": {"num_predict": 1},
+                "keep_alive": "10m",
+            }
+            response = requests.post(f"{self.base_url}/api/generate", json=data, timeout=30)
             return response.status_code == 200
         except Exception:
             return False
@@ -79,7 +91,7 @@ class OllamaWrapper:
             if options:
                 data["options"] = options
 
-            response = requests.post(f"{self.base_url}/api/generate", json=data, timeout=120)
+            response = requests.post(f"{self.base_url}/api/generate", json=data, timeout=300)
             response.raise_for_status()
             if stream:
                 # For streaming we return the raw response so the caller can iterate lines

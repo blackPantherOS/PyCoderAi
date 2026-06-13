@@ -1,6 +1,10 @@
 import os
-# FIXME QtXml is no longer supported.
-from PyQt6 import QtCore, QtGui, QtWidgets, QtXml
+import json
+import xml.etree.ElementTree as ET
+
+from PyQt6 import QtCore, QtGui, QtWidgets
+
+# QtXml cleanup - JSON primary for schemes.
 
 from Extensions_Qt6.Settings.ColorScheme.Lexers import PythonLexer
 from Extensions_Qt6.Settings.ColorScheme.Lexers import CssLexer
@@ -155,32 +159,45 @@ class StyleLexer(QtWidgets.QWidget):
 
         style = {}
 
-        stylePath = os.path.join(self.useData.appPathDict["stylesdir"],
-                                 groupName, styleName + ".xml")
-        # FIXME QtXml is no longer supported.
-        dom_document = QtXml.QDomDocument()
-        file = open(stylePath, "r")
-        x = dom_document.setContent(file.read())
-        file.close()
-
-        rootElement = dom_document.documentElement()
-        lexerElement = rootElement.firstChild().toElement()
-        node = lexerElement.firstChild()
-
-        while node.isNull() is False:
-            tag = node.toElement()
-
-            name = tag.text()
-            font = tag.attribute("font")
-            color = tag.attribute("color")
-            size = int(tag.attribute("size"))
-            bold = (tag.attribute("bold") == "True")
-            italic = (tag.attribute("italic") == "True")
-            paper = tag.attribute("paper")
-
-            style[name] = [font, color, size, bold, italic, paper]
-
-            node = node.nextSibling()
+        # Support legacy .xml and new .json schemes (QtXml cleanup)
+        for ext in (".json", ".xml"):
+            stylePath = os.path.join(self.useData.appPathDict["stylesdir"],
+                                     groupName, styleName + ext)
+            if not os.path.exists(stylePath):
+                continue
+            try:
+                with open(stylePath, "r", encoding="utf-8") as f:
+                    content = f.read().strip()
+                if ext == ".json":
+                    data = json.loads(content)
+                    for name, props in data.get("lexer", {}).items():
+                        style[name] = [
+                            props.get("font", ""),
+                            props.get("color", ""),
+                            int(props.get("size", 10)),
+                            bool(props.get("bold", False)),
+                            bool(props.get("italic", False)),
+                            props.get("paper", "")
+                        ]
+                    return style
+                else:
+                    # Legacy XML via ET - only load the <lexer> section (editor props are separate, to avoid polluting lexer style dict with keys like Calltips/Paper that PythonLexer etc. do not know)
+                    root = ET.fromstring(content)
+                    lexerElement = root.find(".//lexer")
+                    if lexerElement is not None:
+                        for prop in lexerElement.findall("property"):
+                            name = prop.text or ""
+                            style[name] = [
+                                prop.get("font", ""),
+                                prop.get("color", ""),
+                                int(prop.get("size", 10)),
+                                prop.get("bold", "False") == "True",
+                                prop.get("italic", "False") == "True",
+                                prop.get("paper", "")
+                            ]
+                    return style
+            except Exception:
+                continue
         return style
 
     def updateFontSizeBox(self, widget):

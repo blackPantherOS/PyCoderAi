@@ -13,7 +13,8 @@ class VerticalSplitter(QtWidgets.QSplitter):
         self.splitterMoved.connect(self.updateStatus)
 
     def updateStatus(self):
-        bottomTabSize = self.sizes()[1]
+        sizes = self.sizes()
+        bottomTabSize = sizes[1] if len(sizes) > 1 else 0
         self.bottomTabCollapsed = (bottomTabSize == 0)
         if self.bottomTabCollapsed:
             self.showNormal()

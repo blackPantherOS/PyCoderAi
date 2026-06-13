@@ -69,7 +69,7 @@ class Start(QtWidgets.QLabel):
         hbox = QtWidgets.QHBoxLayout()
         centralLayout.addLayout(hbox)
 
-        label = QtWidgets.QLabel("Getting started...")
+        label = QtWidgets.QLabel(_("Getting started..."))
         label.setStyleSheet("color: #000; font: 20px;")
         #label.setFont(QtGui.QFont("Consolas", 20))
         hbox.addWidget(label)
@@ -91,10 +91,10 @@ class Start(QtWidgets.QLabel):
         frame.setFrameShadow(frame.Shadow.Plain)
         centralLayout.addWidget(frame)
 
-        label = QtWidgets.QLabel(
+        label = QtWidgets.QLabel(_(
             "For the sake of convenience, most tasks are handled in the "
             "context of a project. Start editing your files by first "
-            "creating a project or opening an existing one.")
+            "creating a project or opening an existing one."))
         label.setWordWrap(True)
         #label.setFont(QtGui.QFont("Consolas", 12))
         label.setStyleSheet("color: #000; font: 14px;")
@@ -102,7 +102,7 @@ class Start(QtWidgets.QLabel):
 
         centralLayout.addStretch(1)
 
-        label = QtWidgets.QLabel("Recent Projects:")
+        label = QtWidgets.QLabel(_("Recent Projects:"))
         label.setStyleSheet("color: #0063A6; font: 12px;")
         centralLayout.addWidget(label)
 
@@ -122,19 +122,19 @@ class Start(QtWidgets.QLabel):
         hbox = QtWidgets.QHBoxLayout()
         centralLayout.addLayout(hbox)
 
-        newButton = QtWidgets.QPushButton("New Project")
+        newButton = QtWidgets.QPushButton(_("New Project"))
         newButton.setIcon(QtGui.QIcon(os.path.join("Resources", "images", "inbox--plus")))
         newButton.clicked.connect(self.createProject)
         hbox.addWidget(newButton)
 
-        openButton = QtWidgets.QPushButton("Open Project")
+        openButton = QtWidgets.QPushButton(_("Open Project"))
         openButton.setIcon(QtGui.QIcon(os.path.join("Resources", "images", "wooden-box")))
         openButton.clicked.connect(self.openProject)
         hbox.addWidget(openButton)
 
         hbox.addStretch(1)
 
-        homePageButton = QtWidgets.QPushButton("Project Homepage")
+        homePageButton = QtWidgets.QPushButton(_("Project Homepage"))
         homePageButton.setIcon(QtGui.QIcon(os.path.join("Resources", "images", "Web")))
         homePageButton.clicked.connect(self.visitHomepage)
         hbox.addWidget(homePageButton)
@@ -156,7 +156,7 @@ class Start(QtWidgets.QLabel):
 
     def visitHomepage(self):
         QtGui.QDesktopServices().openUrl(QtCore.QUrl(
-            """https://www.blackPanther.hu"""))
+            """http://www.blackpanther.hu"""))
 
     def createProject(self):
         self.pycoder.newProject()
