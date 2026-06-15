@@ -53,6 +53,9 @@ Then perhaps:
 ### Icon
 ![Alt text](pycoder.svg "PyCoder Icon")
 
+### Animation
+![Alt text](/Resources/screenshots/pycoderai.gif "PyCoderAi and Ai Settings")
+
 ### Screenshots
 ![Alt text](/Resources/screenshots/PyCoderAi.jpeg "PyCoderAi and Ai Settings on blackPanther OS")
 ![Alt text](/Resources/screenshots/PyCoder6.png "PyCoder6 running without Minimap on blackPanther OS")
